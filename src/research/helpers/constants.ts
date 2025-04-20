@@ -4,7 +4,7 @@ export enum Nodes {
   BUILD_SECTION = "BUILD_SECTION",
   WEB_SEARCH = "WEB_SEARCH",
   WRITE_SECTION = "WRITE_SECTION",
-  SUMMARIZE_SECTION = "SUMMARIZE_SECTION",
+  SUMMARIZE_SOURCES = "SUMMARIZE_SOURCES",
   REFLECT_ON_SUMMARY = "REFLECT_ON_SUMMARY",
   COMPILE_FINAL_REPORT = "COMPILE_FINAL_REPORT",
   GENERATE_QUERY = "GENERATE_QUERY",
@@ -23,7 +23,6 @@ export const DEFAULT_REPORT_STRUCTURE = `Use this structure to create a report o
    - Provide a concise summary of the report
 `;
 
-export const NUMBER_OF_QUERIES = 5;
+export const NUMBER_OF_QUERIES = 3;
 export const MAX_TOKENS_PER_SOURCE = 4000;
 export const MAX_SEARCH_RESULTS = 3;
-

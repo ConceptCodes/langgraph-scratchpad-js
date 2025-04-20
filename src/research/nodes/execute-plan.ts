@@ -3,12 +3,13 @@ import { Send } from "@langchain/langgraph";
 import type { AgentStateAnnotation } from "../agent/state";
 import { Nodes } from "../helpers/constants";
 
-export const executePlanNode = async (
-  state: typeof AgentStateAnnotation.State
-) => {
-  const { sections } = state;
+export const executePlanNode = (state: typeof AgentStateAnnotation.State) => {
 
-  return sections.map((section) => {
-    new Send(Nodes.EXECUTE_PLAN, { section });
-  });
+  console.log(
+    state.sections.map((section) => section.title).join("\n")
+  )
+
+  return state.sections
+    .filter((section) => !!section.title)
+    .map((section) => new Send(Nodes.GENERATE_QUERY, { section }));
 };

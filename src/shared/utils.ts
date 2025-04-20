@@ -44,8 +44,8 @@ export const tavilySearch = async (
   try {
     const response = await tvly.search(query, {
       maxResults,
-      includeRawContent: true,
-      searchDepth: "advanced",
+      includeRawContent: false,
+      searchDepth: "basic",
     });
 
     return response;

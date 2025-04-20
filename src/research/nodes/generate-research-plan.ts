@@ -26,7 +26,7 @@ const plannerOutputSchema = z.object({
   sections: z
     .array(
       z.object({
-        name: z.string().describe("Name of the section."),
+        title: z.string().describe("Title of the section."),
         description: z.string().describe("Description of the section."),
         research: z
           .string()
@@ -37,19 +37,21 @@ const plannerOutputSchema = z.object({
     .describe("List of sections generated for the report."),
 });
 
+type Output = Partial<typeof AgentStateAnnotation.State>;
+
 export const generateResearchPlanNode = async (
   state: typeof AgentStateAnnotation.State
-) => {
+): Promise<Output> => {
   const structuredWriterLLM = llm.withStructuredOutput(writerOutputSchema);
   const structuredPlannerLLM = llm.withStructuredOutput(plannerOutputSchema);
 
-  let prompt = reportPlannerQueryWriterInstructions(
+  const prompt = reportPlannerQueryWriterInstructions(
     state.topic,
     DEFAULT_REPORT_STRUCTURE,
     NUMBER_OF_QUERIES
   );
 
-  const results = await structuredWriterLLM.invoke([
+  const { queries } = await structuredWriterLLM.invoke([
     new SystemMessage({ content: prompt }),
     new HumanMessage({
       content:
@@ -58,9 +60,7 @@ export const generateResearchPlanNode = async (
   ]);
 
   const webResults = await Promise.all(
-    results.queries.map((query: string) =>
-      tavilySearch(query, MAX_SEARCH_RESULTS)
-    )
+    queries.map((query: string) => tavilySearch(query, MAX_SEARCH_RESULTS))
   );
 
   const combinedSources = deduplicateAndFormatSources(
@@ -74,16 +74,10 @@ export const generateResearchPlanNode = async (
     combinedSources
   );
 
-  prompt = `Generate the sections of the report. 
-Your response must include a 'sections' field containing a list of sections. 
-Each section must have: name, description, plan, research, and content fields.`;
-
   const { sections } = await structuredPlannerLLM.invoke([
     new SystemMessage({ content: systemInstructionsSections }),
-    new HumanMessage({ content: prompt }),
+    new HumanMessage({ content: "Generate the sections of the report." }),
   ]);
 
-  return {
-    sections,
-  };
+  return { sections };
 };

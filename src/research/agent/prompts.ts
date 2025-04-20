@@ -4,9 +4,7 @@ export const reportPlannerQueryWriterInstructions = (
   numOfQueries: number
 ) => `You are performing research for a report. 
 
-<Report topic>
-${topic}
-</Report topic>
+<Report topic>${topic}</Report topic>
 
 <Report organization>
 ${reportOrganization}
@@ -30,10 +28,7 @@ export const reportPlannerInstructions = (
   context: string
 ) => `I want a plan for a report that is concise and focused.
 
-<Report topic>
-The topic of the report is:
-${topic}
-</Report topic>
+<Report topic>The topic of the report is: ${topic}</Report topic>
 
 <Report organization>
 The report should follow this organization:
@@ -68,10 +63,6 @@ Integration guidelines:
 
 Before submitting, review your structure to ensure it has no redundant sections and follows a logical flow.
 </Task>
-
-<Format>
-Call the Sections tool
-</Format>
 `;
 
 export const queryWriterInstructions = (
@@ -79,13 +70,53 @@ export const queryWriterInstructions = (
   sectionDescription: string,
   research: string
 ) => `You are a renowned research professor with multiple publications in prestigious journals.
-Your goal is to generate targeted web search queries.
+Your goal is to generate targeted google search query.
 The query will gather information related to a specific section of a report.
 
 <SECTION>
 Section name: ${sectionName}
 Section description: ${sectionDescription}
 Research required: ${research}
-</SECTION>
+</SECTION>`;
 
-Provide your response in JSON format:`;
+
+export const summarizerInstructions = `<GOAL>
+Generate a comprehensive, PhD-level research summary of the web search results that provides substantial depth while maintaining relevance to the user topic.
+</GOAL>
+
+<REQUIREMENTS>
+When creating a NEW summary:
+1. Extract substantive information from search results with academic rigor and technical precision
+2. Synthesize findings across multiple sources, noting areas of consensus and disagreement
+3. Include relevant statistics, methodologies, and theoretical frameworks when available
+4. Maintain proper attribution of key concepts to researchers or institutions
+5. Structure the summary with clear thematic sections (~500-800 words total)
+6. Prioritize depth over breadth - provide detailed analysis of central concepts
+
+When EXTENDING an existing summary:
+1. Perform a critical analysis of both the existing summary and new search results
+2. Identify theoretical gaps, methodological considerations, or analytical dimensions missing from the current summary
+3. For each piece of new information:
+   a. If it enhances existing points, integrate it with proper transitions while significantly expanding the analysis
+   b. If it represents an alternative perspective, present it as a scholarly counterpoint with supporting evidence
+   c. If it introduces new dimensions, develop a thorough exploration of its implications
+   d. If it contradicts existing information, analyze the methodological differences that might explain the discrepancy
+4. Ensure all additions contribute to a graduate-level understanding of the topic
+5. Aim to double the depth and substantive content of the original summary
+6. Verify that your final output represents a significant scholarly advancement beyond the input summary
+
+Content Requirements:
+- Include a minimum of 1500 words of substantive content
+- Cover at least 3-5 major theoretical perspectives or methodological approaches
+- Address limitations, controversies, or areas of ongoing research
+- Incorporate interdisciplinary connections when relevant
+- Discuss practical applications or real-world implications
+</REQUIREMENTS>
+
+<FORMATTING>
+- Start directly with the updated summary, without preamble or titles
+- Use academic paragraph structure with topic sentences and supporting evidence
+- Employ appropriate transitions between sections to maintain scholarly flow
+- Incorporate bullet points sparingly for key taxonomies or frameworks
+- Do not use XML tags in the output
+</FORMATTING>`;

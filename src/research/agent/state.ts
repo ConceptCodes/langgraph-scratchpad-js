@@ -8,14 +8,12 @@ export const AgentStateAnnotation = Annotation.Root({
     reducer: (a, b) => a.concat(b),
     default: () => [],
   }),
+  finalReport: Annotation<string>,
 });
 
-export const SectionStateAnnotation = Annotation.Root({
-  section: Annotation<Section>,
-  researchLoopCount: Annotation<number>,
-  searchQuery: Annotation<string>,
-  webResearchResults: Annotation<string[]>({
-    reducer: (state, update) => state.concat(update),
-    default: () => [],
-  }),
-});
+export type SectionState = {
+  section: Section;
+  researchLoopCount: number;
+  searchQuery: string;
+  webResearchResults: string[];
+};
