@@ -19,6 +19,7 @@
     "@langchain/core": "^0.3.45",
     "@langchain/langgraph": "^0.2.65",
     "@langchain/ollama": "^0.2.0",
+    "@tavily/core": "^0.3.7",
     "boxen": "^8.0.1",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.22",
