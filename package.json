@@ -1,0 +1,27 @@
+{
+  "name": "langgraph-scrathpad",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "studio": "bunx @langchain/langgraph-cli@latest dev",
+    "calendar": "bun run src/calendar/index.ts"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/bun": "latest",
+    "bun-types": "^1.2.10"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@langchain/core": "^0.3.45",
+    "@langchain/langgraph": "^0.2.65",
+    "@langchain/ollama": "^0.2.0",
+    "boxen": "^8.0.1",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.22",
+    "zod": "^3.24.3"
+  }
+}
