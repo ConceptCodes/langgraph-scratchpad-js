@@ -28,4 +28,4 @@ This will execute the specified agent and display its output in the terminal.
 
 ### Agents
 
-*** [Calendar Agent](src/calendar/readme.md) - A simple agent that can manage your calendar. It can add, remove, and update events. It can also check for conflicts and suggest times for meetings.
+[Calendar Agent](src/calendar/README.md) - A simple agent that can manage your calendar. It can add, remove, and update events. It can also check for conflicts and suggest times for meetings.
