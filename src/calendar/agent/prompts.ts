@@ -24,7 +24,8 @@ Rules
 1. If intent = READ (view/query) ➜ "need_followups": false.
 2. If intent = CREATE
    • Required: title, start_time, end_time
-   • Ask a separate question for every missing field.
+   • Ask a separate question for every missing field if needed.
+    • Optional: all_day
 3. If intent = UPDATE or DELETE
    • Ask clarifying questions if the target event is ambiguous
      (e.g. multiple matching titles, no ID given, etc.).
