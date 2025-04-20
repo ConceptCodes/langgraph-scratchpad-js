@@ -1,7 +1,5 @@
-import { Command } from "@langchain/langgraph";
 import type { AgentStateAnnotation } from "../agent/state";
 import { DBError, executeQuery } from "../helpers/db";
-import { Nodes } from "../helpers/constants";
 
 export const executeQueryNode = async (
   state: typeof AgentStateAnnotation.State
@@ -9,16 +7,8 @@ export const executeQueryNode = async (
   const results = await executeQuery(state.query);
 
   if (results instanceof DBError) {
-    // return new Command({
-    //   update: {
-    //     queryError: results.message,
-    //     queryResults: [],
-    //     isValid: false,
-    //   },
-    //   goto: Nodes.GENERATE_QUERY
-    // });
     return {
-      queryError: results.message,
+      queryError: { message: results.message, isError: true },
       queryResults: [],
       isValid: false,
     };
@@ -26,5 +16,7 @@ export const executeQueryNode = async (
 
   return {
     queryResults: results,
+    queryError: { message: "", isError: false },
+    isValid: true,
   };
 };

@@ -8,7 +8,6 @@ The calendar agent is built using the LangChain framework. It uses the llama3.1 
 
 ![Calendar Agent Architecture](assets/graph.png)
 
-
-
 ## Roadmap
-- [ ] add a conditional edge for execute query to jump back to generate query on failure
+- [x] add a conditional edge for execute query to jump back to generate query on failure
+- [ ] add a safeguard to ensure unsafe sql queries are not executed

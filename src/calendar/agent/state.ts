@@ -19,9 +19,9 @@ export const AgentStateAnnotation = Annotation.Root({
     reducer: (a, b) => b ?? a,
     default: () => [],
   }),
-  queryError: Annotation<string>({
+  queryError: Annotation<{ message: string; isError: boolean }>({
     reducer: (a, b) => b ?? a,
-    default: () => "",
+    default: () => ({ message: "", isError: false }),
   }),
   isValid: Annotation<boolean>({
     reducer: (a, b) => b ?? a,

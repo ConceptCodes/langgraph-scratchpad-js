@@ -24,7 +24,14 @@ export const gatherRequirementsNode = async (
 ) => {
   const lastMessage = state.messages.at(-1);
   const structuredLLM = llm.withStructuredOutput(outputSchema);
-  const prompt = gatherRequirementsPrompt(lastMessage?.content as string);
+
+  const messages = state.messages.map((message) => message.content as string);
+
+  const prompt = gatherRequirementsPrompt(
+    lastMessage?.content as string,
+    messages,
+    state.queryError.message
+  );
 
   const response = await structuredLLM.invoke([
     new SystemMessage({

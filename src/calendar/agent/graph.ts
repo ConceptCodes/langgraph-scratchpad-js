@@ -40,8 +40,14 @@ workflow.addConditionalEdges(
     rejected: Nodes.GENERATE_QUERY,
   }
 );
-workflow.addEdge(Nodes.EXECUTE_QUERY, Nodes.SUMMARIZE_RESPONSE);
-
+workflow.addConditionalEdges(
+  Nodes.EXECUTE_QUERY,
+  (x) => (x.queryError.isError ? "error" : "success"),
+  {
+    error: Nodes.GATHER_REQUIREMENTS,
+    success: Nodes.SUMMARIZE_RESPONSE,
+  }
+);
 workflow.addEdge(Nodes.GENERAL, END);
 workflow.addEdge(Nodes.SUMMARIZE_RESPONSE, END);
 

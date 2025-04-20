@@ -16,13 +16,17 @@ export const generateQueryNode = async (
 ) => {
   const lastMessage = state.messages.at(-1);
   const structuredLLM = llm.withStructuredOutput(outputSchema);
+
+  const messages = state.messages.map((message) => message.content as string);
+
   const prompt = generateSqlQueryPrompt(
     lastMessage?.content as string,
+    messages,
     state.queryResults,
     state.metadata
   );
 
-  const response = await structuredLLM.invoke([
+  const { query } = await structuredLLM.invoke([
     new SystemMessage({
       content: systemMessagePrompt(),
     }),
@@ -32,6 +36,6 @@ export const generateQueryNode = async (
   ]);
 
   return {
-    query: response.query,
+    query,
   };
 };

@@ -10,7 +10,7 @@ export class DBError extends Error {
 
 @Entity({ name: "events" })
 export class Event {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn("increment")
   id!: string;
 
   @Column("text")
@@ -25,14 +25,7 @@ export class Event {
   @Column("boolean", { name: "all_day", nullable: true })
   allDay?: boolean;
 
-  constructor(
-    id: string,
-    title: string,
-    startTime: Date,
-    endTime: Date,
-    allDay: boolean
-  ) {
-    this.id = id;
+  constructor(title: string, startTime: Date, endTime: Date, allDay: boolean) {
     this.title = title;
     this.startTime = startTime;
     this.endTime = endTime;
