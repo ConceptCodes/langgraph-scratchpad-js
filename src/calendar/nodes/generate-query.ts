@@ -18,8 +18,8 @@ export const generateQueryNode = async (
   const structuredLLM = llm.withStructuredOutput(outputSchema);
   const prompt = generateSqlQuery(
     lastMessage?.content as string,
-    state.metadata,
-    state.queryResults
+    state.queryResults,
+    state.metadata
   );
 
   const response = await structuredLLM.invoke([

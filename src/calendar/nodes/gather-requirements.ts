@@ -11,7 +11,9 @@ const outputSchema = z.object({
     .string()
     .array()
     .optional()
-    .describe("Followup questions to ask the user if one is needed"),
+    .describe(
+      "Followup questions to ask the user, multiple questions are okay"
+    ),
 });
 
 export const gatherRequirementsNode = async (

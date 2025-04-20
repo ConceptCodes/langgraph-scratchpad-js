@@ -1,84 +1,71 @@
+
 import { getAllTableSchemas } from "../helpers/db";
 import { Event } from "../helpers/db";
 
-const schema = await getAllTableSchemas();
+const schema = await getAllTableSchemas(); 
 
-export const systemMessage = () => {
-  return `You are a Calendar Agent designed to help users manage their calendar events.
+export const systemMessage = () => `
+You are **Calendar‑GPT**, a precise, no‑nonsense assistant for managing events.
 
-You can create, update, delete, and query calendar events stored in a SQL database.
+𐄂  NEVER hallucinate columns or tables.  
+✓  ALWAYS respond with **JSON only** – no back‑ticks, no prose – using the schemas below.
 
-Use this context to understand and assist with user requests accurately.
+Current date: ${new Date().toISOString().slice(0, 10)}
 
-Here is the current database schema:
+<DatabaseSchemas>
 ${JSON.stringify(schema, null, 2)}
-
-- The current date is: ${
-    new Date().toISOString().split("T")[0]
-  } (YYYY-MM-DD format)
-
+</DatabaseSchemas>
 `;
-};
 
-export const gatherRequirementsPrompt = (userRequest: string) => {
-  return `Your task is to determine whether you need to gather any additional information from the user in order to fulfill their request.
+export const gatherRequirementsPrompt = (userRequest: string) => `
+Task: Decide whether you must ask follow‑up questions **before** acting.
 
-<Constraint>
-  Only ask follow-up questions if:
-  - The user is trying to **create**, **update**, or **delete** a calendar event.
-</Constraint>
+Rules
+1. If intent = READ (view/query) ➜ "need_followups": false.
+2. If intent = CREATE
+   • Required: title, start_time, end_time
+   • Ask a separate question for every missing field.
+3. If intent = UPDATE or DELETE
+   • Ask clarifying questions if the target event is ambiguous
+     (e.g. multiple matching titles, no ID given, etc.).
 
-If the user is asking to **view** or **query** events (e.g., asking about events "today", "tomorrow", or "this week"), you do **not** need to ask any follow-up questions.
-
-If the user is asking to **create** an event:
-- Check if the request includes all necessary information for the 'events' table columns: 'title', 'start_time', 'end_time'. The 'description' column is optional.
-- If any of the required information ('title', 'start_time', 'end_time') is missing from the user request, ask follow-up questions specifically to gather the missing details.
-- If all required information ('title', 'start_time', 'end_time') seems present, do not ask follow-up questions.
-
-If the user is asking to **update** or **delete** an event:
-- Ask follow-up questions if the specific event to modify is unclear or if the requested changes are ambiguous.
-
-User request: "${userRequest}"
-
-Based on the user request and the rules above, decide if follow-up questions are needed. If yes, formulate the questions. If no, state that no follow-up questions are needed.
+UserRequest: """${userRequest}"""
 `;
-};
 
-export const isValidSqlQuery = (query: string) => {
-  return `You are a SQL validator.
+export const isValidSqlQuery = (query: string) => `
+You are SQL‑Lint.
 
-Your task is to determine whether the following SQL query is valid based on standard SQL syntax and structure:
-
-SQL Query: "${query}"`;
-};
+<Schema>${JSON.stringify(schema, null, 2)}</Schema>
+<SQL>${query}</SQL>
+`;
 
 export const generateSqlQuery = (
   userRequest: string,
-  metadata?: Record<string, string>,
-  queryResults?: Event[]
-) => {
-  return `You are a SQL generator.
+  queryResults: Event[] = [],
+  metadata: Record<string, string> = {}
+) => `
+You write **ANSI SQL** only.
 
-Based on the user request, generate a valid SQL query that will return the correct results.
+Guidelines
+• Table names & columns must exist in <Schema>.
+• Use parameter placeholders like :title, :start_time so the caller can bind safely.
+• For UPDATE/DELETE, use "id = :id" where possible.
 
-User request: "${userRequest}"
+<Schema>${JSON.stringify(schema, null, 2)}</Schema>
+UserRequest: """${userRequest}"""
+LastQueryResults: ${JSON.stringify(queryResults)}
+Metadata: ${JSON.stringify(metadata)}
+`;
 
-Additional context:
-- Metadata: ${JSON.stringify(metadata)}
-- Previous query results: ${JSON.stringify(queryResults)}
+export const generateSummary = (
+  queryResults: Event[],
+  userRequest: string,
+  query: string
+) => `
+Summarize the SQL result for the end‑user in 1‑3 sentences.  
+Do NOT expose raw SQL or internal IDs.
 
-Ensure the SQL is valid and aligns with the database schema provided.`;
-};
-
-export const generateSummary = (queryResults: Event[], userRequest: string) => {
-  return `You are a summarizer for SQL query results.
-
-Your task is to generate a plain-text summary that concisely explains the results returned by the SQL query.
-
-User request: "${userRequest}"
-
-Query results:
-${JSON.stringify(queryResults)}
-
-Do not include any SQL code in the summary. Focus on delivering a clear and human-readable explanation of the outcome.`;
-};
+UserRequest: """${userRequest}"""
+ExecutedSQL: """${query}"""
+Results: ${JSON.stringify(queryResults)}
+`;

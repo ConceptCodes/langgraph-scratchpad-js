@@ -20,7 +20,8 @@ export const summarizeResultsNode = async (
   const structuredLLM = llm.withStructuredOutput(outputSchema);
   const prompt = generateSummary(
     state.queryResults,
-    lastMessage?.content as string
+    lastMessage?.content as string,
+    state.query
   );
 
   const response = await structuredLLM.invoke([

@@ -6,30 +6,30 @@ export class Event {
   @PrimaryColumn("text")
   id!: string;
 
-  @Column("text", { nullable: true })
-  title?: string;
+  @Column("text")
+  title: string;
 
-  @Column("integer", { name: "start_time", nullable: true })
-  startTime?: number;
+  @Column("datetime", { name: "start_time" })
+  startTime: Date;
 
-  @Column("integer", { name: "end_time", nullable: true })
-  endTime?: number;
+  @Column("datetime", { name: "end_time" })
+  endTime: Date;
 
-  @Column("integer", { name: "all_day", nullable: true })
-  allDay?: number;
+  @Column("boolean", { name: "all_day", nullable: true })
+  allDay?: boolean;
 
   constructor(
     id: string,
     title: string,
-    startTime: number,
-    endTime: number,
+    startTime: Date,
+    endTime: Date,
     allDay: boolean
   ) {
     this.id = id;
     this.title = title;
     this.startTime = startTime;
     this.endTime = endTime;
-    this.allDay = allDay ? 1 : 0;
+    this.allDay = allDay;
   }
 }
 

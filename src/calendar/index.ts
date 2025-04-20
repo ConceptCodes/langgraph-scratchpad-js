@@ -36,6 +36,7 @@ const run = async () => {
     );
 
     for await (const chunk of await result) {
+      console.log("chunk", chunk);
       if (chunk[Nodes.SUMMARIZE_RESPONSE]) {
         const message = chunk[Nodes.SUMMARIZE_RESPONSE].messages[0].content;
         prettifyOutput(message, "green");

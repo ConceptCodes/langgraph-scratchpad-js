@@ -1,6 +1,8 @@
 import { ChatOllama } from "@langchain/ollama";
 
+const model = "gemma3:12b";
+
 export const llm = new ChatOllama({
-  model: "llama3.1",
+  model,
   temperature: 0,
 });
