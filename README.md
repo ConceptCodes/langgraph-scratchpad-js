@@ -3,9 +3,6 @@
 This repository serves as a scratchpad for experimenting with LangGraph. It contains various small projects aimed at exploring and understanding the LangGraph API.
 
 
-## Getting Started
-To get started with this project, you need to have [Bun](https://bun.sh) installed. You can install it by following the instructions on their website.
-
 ## Prerequisites
 - [Bun](https://bun.sh) - A fast all-in-one JavaScript runtime.
 - [Ollama](https://ollama.com/) - A local LLM server. You can install it by following the instructions on their website.
