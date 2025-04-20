@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 
-import { generateSqlQuery, systemMessage } from "../agent/prompts";
+import { generateSqlQueryPrompt, systemMessagePrompt } from "../agent/prompts";
 import type { AgentStateAnnotation } from "../agent/state";
 import { llm } from "../helpers/llm";
 
@@ -16,7 +16,7 @@ export const generateQueryNode = async (
 ) => {
   const lastMessage = state.messages.at(-1);
   const structuredLLM = llm.withStructuredOutput(outputSchema);
-  const prompt = generateSqlQuery(
+  const prompt = generateSqlQueryPrompt(
     lastMessage?.content as string,
     state.queryResults,
     state.metadata
@@ -24,7 +24,7 @@ export const generateQueryNode = async (
 
   const response = await structuredLLM.invoke([
     new SystemMessage({
-      content: systemMessage(),
+      content: systemMessagePrompt(),
     }),
     new HumanMessage({
       content: prompt,

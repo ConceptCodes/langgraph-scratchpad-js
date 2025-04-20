@@ -7,7 +7,7 @@ import {
 
 import { llm } from "../helpers/llm";
 import type { AgentStateAnnotation } from "../agent/state";
-import { generateSummary, systemMessage } from "../agent/prompts";
+import { generateSummaryPrompt, systemMessagePrompt } from "../agent/prompts";
 
 const outputSchema = z.object({
   summary: z.string().describe("The summary of the query results"),
@@ -18,7 +18,7 @@ export const summarizeResultsNode = async (
 ) => {
   const lastMessage = state.messages.at(-1);
   const structuredLLM = llm.withStructuredOutput(outputSchema);
-  const prompt = generateSummary(
+  const prompt = generateSummaryPrompt(
     state.queryResults,
     lastMessage?.content as string,
     state.query
@@ -26,7 +26,7 @@ export const summarizeResultsNode = async (
 
   const response = await structuredLLM.invoke([
     new SystemMessage({
-      content: systemMessage(),
+      content: systemMessagePrompt(),
     }),
     new HumanMessage({
       content: prompt,

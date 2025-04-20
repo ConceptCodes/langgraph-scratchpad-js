@@ -1,11 +1,15 @@
 import { BaseMessage } from "@langchain/core/messages";
-import { Annotation } from "@langchain/langgraph";
+import { Annotation, END } from "@langchain/langgraph";
 import { Event } from "../helpers/db";
 
 export const AgentStateAnnotation = Annotation.Root({
   messages: Annotation<BaseMessage[]>({
     reducer: (a, b) => a.concat(b),
     default: () => [],
+  }),
+  next: Annotation<string>({
+    reducer: (a, b) => b ?? a ?? END,
+    default: () => "",
   }),
   query: Annotation<string>({
     reducer: (a, b) => b ?? a,
@@ -14,6 +18,10 @@ export const AgentStateAnnotation = Annotation.Root({
   queryResults: Annotation<Event[]>({
     reducer: (a, b) => b ?? a,
     default: () => [],
+  }),
+  queryError: Annotation<string>({
+    reducer: (a, b) => b ?? a,
+    default: () => "",
   }),
   isValid: Annotation<boolean>({
     reducer: (a, b) => b ?? a,

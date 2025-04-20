@@ -8,15 +8,27 @@ import { summarizeResultsNode } from "../nodes/summarize-results";
 
 import { Nodes } from "../helpers/constants";
 import { AgentStateAnnotation } from "../agent/state";
+import { routerNode } from "../nodes/router";
+import { generalNode } from "../nodes/general";
 
 const workflow = new StateGraph(AgentStateAnnotation)
+  .addNode(Nodes.ROUTER, routerNode)
+  .addNode(Nodes.GENERAL, generalNode)
   .addNode(Nodes.GATHER_REQUIREMENTS, gatherRequirementsNode)
   .addNode(Nodes.GENERATE_QUERY, generateQueryNode)
   .addNode(Nodes.IS_VALID_QUERY, isValidQueryNode)
   .addNode(Nodes.EXECUTE_QUERY, executeQueryNode)
   .addNode(Nodes.SUMMARIZE_RESPONSE, summarizeResultsNode);
 
-workflow.addEdge(START, Nodes.GATHER_REQUIREMENTS);
+workflow.addEdge(START, Nodes.ROUTER);
+workflow.addConditionalEdges(
+  Nodes.ROUTER,
+  (x: typeof AgentStateAnnotation.State) => x.next,
+  {
+    [Nodes.GENERAL]: Nodes.GENERAL,
+    [Nodes.GATHER_REQUIREMENTS]: Nodes.GATHER_REQUIREMENTS,
+  }
+);
 workflow.addEdge(Nodes.GATHER_REQUIREMENTS, Nodes.GENERATE_QUERY);
 workflow.addEdge(Nodes.GENERATE_QUERY, Nodes.IS_VALID_QUERY);
 workflow.addConditionalEdges(
@@ -29,6 +41,8 @@ workflow.addConditionalEdges(
   }
 );
 workflow.addEdge(Nodes.EXECUTE_QUERY, Nodes.SUMMARIZE_RESPONSE);
+
+workflow.addEdge(Nodes.GENERAL, END);
 workflow.addEdge(Nodes.SUMMARIZE_RESPONSE, END);
 
 export const graph = workflow.compile({

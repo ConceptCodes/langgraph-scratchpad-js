@@ -2,7 +2,10 @@ import { z } from "zod";
 import { interrupt } from "@langchain/langgraph";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 
-import { gatherRequirementsPrompt, systemMessage } from "../agent/prompts";
+import {
+  gatherRequirementsPrompt,
+  systemMessagePrompt,
+} from "../agent/prompts";
 import { AgentStateAnnotation } from "../agent/state";
 import { llm } from "../helpers/llm";
 
@@ -25,7 +28,7 @@ export const gatherRequirementsNode = async (
 
   const response = await structuredLLM.invoke([
     new SystemMessage({
-      content: systemMessage(),
+      content: systemMessagePrompt(),
     }),
     new HumanMessage({
       content: prompt,

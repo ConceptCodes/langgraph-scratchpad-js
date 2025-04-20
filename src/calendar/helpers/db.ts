@@ -1,9 +1,16 @@
 import "reflect-metadata";
-import { DataSource, Entity, PrimaryColumn, Column } from "typeorm";
+import { DataSource, Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+
+export class DBError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "DBError";
+  }
+}
 
 @Entity({ name: "events" })
 export class Event {
-  @PrimaryColumn("text")
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
 
   @Column("text")
@@ -119,7 +126,9 @@ export const getAllTableSchemas = async (): Promise<
   }
 };
 
-export const executeQuery = async (query: string): Promise<Event[]> => {
+export const executeQuery = async (
+  query: string
+): Promise<Event[] | DBError> => {
   const dataSource = await initializeDataSource();
   try {
     const queryRunner = dataSource.createQueryRunner();
@@ -150,7 +159,7 @@ export const executeQuery = async (query: string): Promise<Event[]> => {
     }
   } catch (error) {
     console.error("Error executing query:", error);
-    throw error;
+    return new DBError(`Query execution failed: ${error.message}`);
   }
 };
 
