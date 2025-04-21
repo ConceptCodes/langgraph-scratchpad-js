@@ -19,9 +19,7 @@ export const isValidQueryNode = async (
     new SystemMessage({
       content: systemMessagePrompt(),
     }),
-    new HumanMessage({
-      content: prompt,
-    }),
+    new HumanMessage({ content: prompt }),
   ]);
 
   return {

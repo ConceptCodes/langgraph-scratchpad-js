@@ -29,8 +29,7 @@ const subGraph = new StateGraph({
 
   .addEdge(START, Nodes.GENERATE_QUERY)
   .addEdge(Nodes.GENERATE_QUERY, Nodes.WEB_SEARCH)
-  .addEdge(Nodes.WEB_SEARCH, Nodes.WRITE_SECTION)
-  .compile();
+  .addEdge(Nodes.WEB_SEARCH, Nodes.WRITE_SECTION);
 
 const workflow = new StateGraph({
   stateSchema: AgentStateAnnotation,
@@ -38,14 +37,14 @@ const workflow = new StateGraph({
   output: OutputStateAnnotation,
 })
   .addNode(Nodes.GENERATE_RESEARCH_PLAN, generateResearchPlanNode)
-  .addNode(Nodes.EXECUTE_PLAN, executePlanNode, { ends: [Nodes.BUILD_SECTION]})
-  .addNode(Nodes.BUILD_SECTION, subGraph)
+  // .addNode(Nodes.EXECUTE_PLAN, , { ends: [Nodes.BUILD_SECTION] })
+  .addNode(Nodes.BUILD_SECTION, subGraph.compile())
   .addNode(Nodes.GATHER_COMPLETED_SECTIONS, gatherCompletedSectionsNode)
   .addNode(Nodes.WRITE_FINAL_SECTIONS, writeFinalSectionsNode)
   .addNode(Nodes.COMPILE_FINAL_REPORT, summarizeSourcesNode);
 
 workflow.addEdge(START, Nodes.GENERATE_RESEARCH_PLAN);
-workflow.addEdge(Nodes.GENERATE_RESEARCH_PLAN, Nodes.EXECUTE_PLAN);
+workflow.addConditionalEdges(Nodes.GENERATE_RESEARCH_PLAN, executePlanNode);
 workflow.addEdge(Nodes.BUILD_SECTION, Nodes.GATHER_COMPLETED_SECTIONS);
 workflow.addConditionalEdges(
   Nodes.GATHER_COMPLETED_SECTIONS,

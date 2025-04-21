@@ -23,8 +23,7 @@ ${JSON.stringify(schema, null, 2)}
 
 export const gatherRequirementsPrompt = (
   userRequest: string,
-  chatHistory: string[] = [],
-  previousError: string | null = null
+  chatHistory: string[] = []
 ) => `
 Task: Decide whether follow‑up questions are needed **before** acting on the user's request to manage calendar events. Your goal is to gather all necessary information with minimal interaction.
 
@@ -52,8 +51,6 @@ ${JSON.stringify(chatHistory, null, 2)}
 
 <UserRequest>${userRequest}</UserRequest>
 
-<PreviousError>${previousError}</PreviousError>
-
 Based on the <UserRequest>, list any specific follow-up questions needed.
 `;
 
@@ -73,9 +70,10 @@ export const generateSqlQueryPrompt = (
   userRequest: string,
   chatHistory: string[] = [],
   queryResults: Event[] = [],
-  metadata: Record<string, string> = {}
+  metadata: Record<string, string> = {},
+  previousError: string | null = null
 ) => `
-You write **ANSI SQL** compatible with SQLite only.
+Generate a sqlite query based on the user's request and the context below.
 
 <Constraint>
 • Table names & columns must exist in <Schema>.
@@ -83,22 +81,39 @@ You write **ANSI SQL** compatible with SQLite only.
 • Generate only a single, valid SQL statement.
 </Constraint>
 
-<Schema>${JSON.stringify(schema, null, 2)}</Schema>
-
 <UserRequest>${userRequest}</UserRequest>
 
+${
+  queryResults.length > 0
+    ? `
 <LastQueryResults>
 ${JSON.stringify(queryResults)}
 </LastQueryResults>
-
+`
+    : ""
+}${
+  previousError
+    ? `
+<PreviousError>${previousError}</PreviousError>
+`
+    : ""
+}${
+  Object.keys(metadata).length > 0
+    ? `
 <Metadata>
 ${JSON.stringify(metadata)}
 </Metadata>
-
+`
+    : ""
+}${
+  chatHistory.length > 0
+    ? `
 <ChatHistory>
 ${JSON.stringify(chatHistory, null, 2)}
 </ChatHistory>
-
+`
+    : ""
+}
 SQL Query:
 `;
 

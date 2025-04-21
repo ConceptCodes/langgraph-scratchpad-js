@@ -6,3 +6,8 @@ export const llm = new ChatOllama({
   model,
   temperature: 0,
 });
+
+export const sqlLLM = new ChatOllama({
+  model: "sqlcoder",
+  temperature: 0,
+});

@@ -5,7 +5,7 @@ import { Nodes } from "../helpers/constants";
 
 export const executePlanNode = (state: typeof AgentStateAnnotation.State) => {
   const { sections, topic } = state;
-  return sections.map(
-    (section) => new Send(Nodes.GENERATE_QUERY, { section, topic })
-  );
+  return sections.map((section) => {
+    return new Send(Nodes.BUILD_SECTION, { section, topic });
+  });
 };

@@ -8,24 +8,34 @@ import {
 export const webResearchNode = async (
   state: typeof SectionStateAnnotation.State
 ): Promise<typeof SectionStateAnnotation.Update> => {
-  const { searchQuery } = state;
-  console.log("Web search query:", searchQuery);
-  const context = await tavilySearch(searchQuery, MAX_SEARCH_RESULTS);
+  const { searchQueries } = state;
+
+  const context = await Promise.all(
+    searchQueries.map((query) => tavilySearch(query, MAX_SEARCH_RESULTS))
+  );
 
   const webResearchResults = deduplicateAndFormatSources(
-    [context],
+    context,
     MAX_TOKENS_PER_SOURCE
   );
-  const sources = context.results.map((source) => ({
-    title: source.title,
-    url: source.url,
-  }));
+
+  console.log("webResearchResults", webResearchResults);
+
+  const sources = context.map((data) => {
+    return data.results.map((item) => ({
+      title: item.title,
+      url: item.url,
+    }));
+  });
+
+  const sourcesGathered = sources.flat();
+  console.log("sourcesGathered", sourcesGathered);
 
   return {
-    sourcesGathered: sources,
+    // sourcesGathered: sources.flat(),
     researchLoopCount: state.researchLoopCount
       ? state.researchLoopCount + 1
       : 1,
-    webResearchResults: [webResearchResults],
+    // webResearchResults: [webResearchResults],
   };
 };

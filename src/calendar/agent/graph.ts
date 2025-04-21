@@ -47,7 +47,7 @@ workflow.addConditionalEdges(
   Nodes.EXECUTE_QUERY,
   (x) => (x.queryError.isError ? "error" : "success"),
   {
-    error: Nodes.GATHER_REQUIREMENTS,
+    error: Nodes.GENERATE_QUERY,
     success: Nodes.SUMMARIZE_RESPONSE,
   }
 );
