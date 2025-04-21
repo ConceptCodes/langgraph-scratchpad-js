@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 
-import type { SectionStateAnnotation } from "../agent/state";
 import { llm } from "../helpers/llm";
 import { summarizerInstructions } from "../agent/prompts";
+import type { SectionStateAnnotation } from "../agent/state";
 
 const outputSchema = z.object({
   runningSummary: z.string(),
@@ -11,7 +11,7 @@ const outputSchema = z.object({
 
 export const summarizeSourcesNode = async (
   state: typeof SectionStateAnnotation.State
-) => {
+): Promise<typeof SectionStateAnnotation.Update> => {
   const { section } = state;
   const existingSummary = state.section.content;
   const mostRecentWebResearch =

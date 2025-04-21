@@ -50,12 +50,6 @@ For example, a good report structure might look like:
 4/ comparison between A and B
 5/ conclusion
 
-Each section should have the fields:
-
-- Name - Name for this section of the report.
-- Description - Brief overview of the main topics covered in this section.
-- Content - The content of the section, which you will leave blank for now.
-
 Integration guidelines:
 - Include examples and implementation details within main topic sections, not as separate sections
 - Ensure each section has a distinct purpose with no content overlap
@@ -78,7 +72,6 @@ Section name: ${sectionName}
 Section description: ${sectionDescription}
 Research required: ${research}
 </SECTION>`;
-
 
 export const summarizerInstructions = `<GOAL>
 Generate a comprehensive, PhD-level research summary of the web search results that provides substantial depth while maintaining relevance to the user topic.
@@ -120,3 +113,68 @@ Content Requirements:
 - Incorporate bullet points sparingly for key taxonomies or frameworks
 - Do not use XML tags in the output
 </FORMATTING>`;
+
+export const finalSectionWriterInstructions = (
+  topic: string,
+  sectionName: string,
+  sectionTopic: string,
+  context: string
+) => `You are an expert technical writer crafting a section that synthesizes information from the rest of the report.
+
+<Report topic>
+${topic}
+</Report topic>
+
+<Section name>
+${sectionName}
+</Section name>
+
+<Section topic> 
+${sectionTopic}
+</Section topic>
+
+<Available report content>
+${context}
+</Available report content>
+
+<Task>
+1. Section-Specific Approach:
+
+For Introduction:
+- Use # for report title (Markdown format)
+- 50-100 word limit
+- Write in simple and clear language
+- Focus on the core motivation for the report in 1-2 paragraphs
+- Use a clear narrative arc to introduce the report
+- Include NO structural elements (no lists or tables)
+- No sources section needed
+
+For Conclusion/Summary:
+- Use ## for section title (Markdown format)
+- 100-150 word limit
+- For comparative reports:
+    * Must include a focused comparison table using Markdown table syntax
+    * Table should distill insights from the report
+    * Keep table entries clear and concise
+- For non-comparative reports: 
+    * Only use ONE structural element IF it helps distill the points made in the report:
+    * Either a focused table comparing items present in the report (using Markdown table syntax)
+    * Or a short list using proper Markdown list syntax:
+      - Use \`*\` or \`-\` for unordered lists
+      - Use \`1.\` for ordered lists
+      - Ensure proper indentation and spacing
+- End with specific next steps or implications
+- No sources section needed
+
+3. Writing Approach:
+- Use concrete details over general statements
+- Make every word count
+- Focus on your single most important point
+</Task>
+
+<Quality Checks>
+- For introduction: 50-100 word limit, # for report title, no structural elements, no sources section
+- For conclusion: 100-150 word limit, ## for section title, only ONE structural element at most, no sources section
+- Markdown format
+- Do not include word count or any preamble in your response
+</Quality Checks>`;

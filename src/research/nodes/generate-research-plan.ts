@@ -42,11 +42,12 @@ type Output = Partial<typeof AgentStateAnnotation.State>;
 export const generateResearchPlanNode = async (
   state: typeof AgentStateAnnotation.State
 ): Promise<Output> => {
+  const { topic } = state;
   const structuredWriterLLM = llm.withStructuredOutput(writerOutputSchema);
   const structuredPlannerLLM = llm.withStructuredOutput(plannerOutputSchema);
 
   const prompt = reportPlannerQueryWriterInstructions(
-    state.topic,
+    topic,
     DEFAULT_REPORT_STRUCTURE,
     NUMBER_OF_QUERIES
   );
@@ -69,7 +70,7 @@ export const generateResearchPlanNode = async (
   );
 
   const systemInstructionsSections = reportPlannerInstructions(
-    state.topic,
+    topic,
     DEFAULT_REPORT_STRUCTURE,
     combinedSources
   );

@@ -4,6 +4,8 @@
   "dependencies": ["."],
   "graphs": {
     "calendar": "./src/calendar/agent/graph.ts:graph",
-    "research": "./src/research/agent/graph.ts:graph"
-  }
+    "research": "./src/research/agent/graph.ts:graph",
+    "test": "./src/test.ts:graph"
+  },
+  "env": ".env"
 }

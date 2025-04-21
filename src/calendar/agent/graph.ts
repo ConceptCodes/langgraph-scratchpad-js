@@ -7,11 +7,14 @@ import { executeQueryNode } from "../nodes/execute-query";
 import { summarizeResultsNode } from "../nodes/summarize-results";
 
 import { Nodes } from "../helpers/constants";
-import { AgentStateAnnotation } from "../agent/state";
+import { AgentStateAnnotation, InputStateAnnotation } from "../agent/state";
 import { routerNode } from "../nodes/router";
 import { generalNode } from "../nodes/general";
 
-const workflow = new StateGraph(AgentStateAnnotation)
+const workflow = new StateGraph({
+  stateSchema: AgentStateAnnotation,
+  input: InputStateAnnotation,
+})
   .addNode(Nodes.ROUTER, routerNode)
   .addNode(Nodes.GENERAL, generalNode)
   .addNode(Nodes.GATHER_REQUIREMENTS, gatherRequirementsNode)

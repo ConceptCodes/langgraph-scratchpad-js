@@ -4,6 +4,5 @@ export type Section = {
   title: string;
   content?: string;
   description: string;
-  sources?: Source[];
   research: string;
 };

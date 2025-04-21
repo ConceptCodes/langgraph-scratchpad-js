@@ -2,11 +2,15 @@ import { BaseMessage } from "@langchain/core/messages";
 import { Annotation, END } from "@langchain/langgraph";
 import { Event } from "../helpers/db";
 
-export const AgentStateAnnotation = Annotation.Root({
+export const InputStateAnnotation = Annotation.Root({
   messages: Annotation<BaseMessage[]>({
     reducer: (a, b) => a.concat(b),
     default: () => [],
   }),
+});
+
+export const AgentStateAnnotation = Annotation.Root({
+  ...InputStateAnnotation.spec,
   next: Annotation<string>({
     reducer: (a, b) => b ?? a ?? END,
     default: () => "",
