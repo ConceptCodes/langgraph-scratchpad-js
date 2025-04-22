@@ -6,7 +6,7 @@ export const gatherCompletedSectionsNode = async (
 ) => {
   const { completedSections } = state;
 
-  const completedReportSections = formatSections(completedSections);
+  const reportSectionsFromResearch = formatSections(completedSections);
 
-  return { completedReportSections };
+  return { reportSectionsFromResearch };
 };
