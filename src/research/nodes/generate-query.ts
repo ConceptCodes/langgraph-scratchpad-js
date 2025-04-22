@@ -4,6 +4,7 @@ import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { llm } from "../helpers/llm";
 import { queryWriterInstructions } from "../agent/prompts";
 import type { SectionStateAnnotation } from "../agent/state";
+import { NUMBER_OF_QUERIES } from "../helpers/constants";
 
 const outputSchema = z.object({
   searchQueries: z.string().array().describe("List of search queries"),
@@ -12,13 +13,12 @@ const outputSchema = z.object({
 export const generateQueryNode = async (
   state: typeof SectionStateAnnotation.State
 ): Promise<typeof SectionStateAnnotation.Update> => {
-  const { section } = state;
+  const {
+    section: { title, description },
+  } = state;
+
   const structuredLLM = llm.withStructuredOutput(outputSchema);
-  const prompt = queryWriterInstructions(
-    section.title,
-    section.description,
-    section.research
-  );
+  const prompt = queryWriterInstructions(title, description, NUMBER_OF_QUERIES);
 
   const { searchQueries } = await structuredLLM.invoke([
     new SystemMessage({ content: prompt }),

@@ -17,14 +17,14 @@ export const DEFAULT_REPORT_STRUCTURE = `Use this structure to create a report o
 1. Introduction (no research needed)
    - Brief overview of the topic area
 
-2. Main Body Sections:
+2. Main Body Sections (2-5 sections):
    - Each section should focus on a sub-topic of the user-provided topic
    
-3. Conclusion
+3. Conclusion (summarize the main points of the report)
    - Aim for 1 structural element (either a list of table) that distills the main body sections 
    - Provide a concise summary of the report
 `;
 
 export const NUMBER_OF_QUERIES = 3;
-export const MAX_TOKENS_PER_SOURCE = 2000;
+export const MAX_TOKENS_PER_SOURCE = 4000;
 export const MAX_SEARCH_RESULTS = 3;

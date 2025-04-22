@@ -29,9 +29,10 @@ const plannerOutputSchema = z.object({
         title: z.string().describe("Title of the section."),
         description: z.string().describe("Description of the section."),
         research: z
-          .string()
-          .max(100)
-          .describe("Research needed for the section. MAX 100 WORDS"),
+          .boolean()
+          .describe(
+            "Whether to perform web research for this section of the report."
+          ),
       })
     )
     .describe("List of sections generated for the report."),

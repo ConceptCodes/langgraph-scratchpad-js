@@ -14,28 +14,10 @@ export const webResearchNode = async (
     searchQueries.map((query) => tavilySearch(query, MAX_SEARCH_RESULTS))
   );
 
-  const webResearchResults = deduplicateAndFormatSources(
-    context,
-    MAX_TOKENS_PER_SOURCE
-  );
-
-  console.log("webResearchResults", webResearchResults);
-
-  const sources = context.map((data) => {
-    return data.results.map((item) => ({
-      title: item.title,
-      url: item.url,
-    }));
-  });
-
-  const sourcesGathered = sources.flat();
-  console.log("sourcesGathered", sourcesGathered);
+  const source = deduplicateAndFormatSources(context, MAX_TOKENS_PER_SOURCE);
 
   return {
-    // sourcesGathered: sources.flat(),
-    researchLoopCount: state.researchLoopCount
-      ? state.researchLoopCount + 1
-      : 1,
-    // webResearchResults: [webResearchResults],
+    searchIterations: 1,
+    source,
   };
 };

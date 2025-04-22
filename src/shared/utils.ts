@@ -1,8 +1,9 @@
-import boxen from "boxen";
 import fs from "fs";
+import boxen from "boxen";
 import { tavily, type TavilySearchResponse } from "@tavily/core";
 
 import "dotenv/config";
+import { ChatOllama } from "@langchain/ollama";
 
 type ColorName = Bun.ColorInput;
 

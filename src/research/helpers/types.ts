@@ -4,5 +4,5 @@ export type Section = {
   title: string;
   content?: string;
   description: string;
-  research: string;
+  research: boolean;
 };

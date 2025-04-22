@@ -62,16 +62,27 @@ Before submitting, review your structure to ensure it has no redundant sections 
 export const queryWriterInstructions = (
   sectionName: string,
   sectionDescription: string,
-  research: string
-) => `You are a renowned research professor with multiple publications in prestigious journals.
-Your goal is to generate targeted google search query.
-The query will gather information related to a specific section of a report.
+  numOfQueries: number
+) => `You are an expert technical writer crafting targeted web search queries that will gather comprehensive information for writing a technical report section.
 
-<SECTION>
-Section name: ${sectionName}
-Section description: ${sectionDescription}
-Research required: ${research}
-</SECTION>`;
+<Report topic>
+${sectionName}
+</Report topic>
+
+<Section topic>
+${sectionDescription}
+</Section topic>
+
+<Task>
+Your goal is to generate ${numOfQueries} search queries that will help gather comprehensive information above the section topic. 
+
+The queries should:
+
+1. Be related to the topic 
+2. Examine different aspects of the topic
+
+Make the queries specific enough to find high-quality, relevant sources.
+</Task>`;
 
 export const summarizerInstructions = `<GOAL>
 Generate a comprehensive, PhD-level research summary of the web search results that provides substantial depth while maintaining relevance to the user topic.
@@ -178,3 +189,99 @@ For Conclusion/Summary:
 - Markdown format
 - Do not include word count or any preamble in your response
 </Quality Checks>`;
+
+export const sectionWriterInstructions = `Write one section of a research report.
+<Task>
+1. Review the report topic, section name, and section topic carefully.
+2. If present, review any existing section content. 
+3. Then, look at the provided Source material.
+4. Decide the sources that you will use it to write a report section.
+5. Write the report section and list your sources. 
+</Task>
+
+<Writing Guidelines>
+- If existing section content is not populated, write from scratch
+- If existing section content is populated, synthesize it with the source material
+- Strict 150-200 word limit
+- Use simple, clear language
+- Use short paragraphs (2-3 sentences max)
+- Use ## for section title (Markdown format)
+</Writing Guidelines>
+
+<Citation Rules>
+- Assign each unique URL a single citation number in your text
+- End with ### Sources that lists each source with corresponding numbers
+- IMPORTANT: Number sources sequentially without gaps (1,2,3,4...) in the final list regardless of which sources you choose
+- Example format:
+  [1] Source Title: URL
+  [2] Source Title: URL
+</Citation Rules>
+
+<Final Check>
+1. Verify that EVERY claim is grounded in the provided Source material
+2. Confirm each URL appears ONLY ONCE in the Source list
+3. Verify that sources are numbered sequentially (1,2,3...) without any gaps
+</Final Check>
+"""
+`;
+
+export const sectionWriterPrompt = (
+  topic: string,
+  sectionName: string,
+  sectionTopic: string,
+  context: string,
+  sectionContent: string
+) => `
+"""
+<Report topic>
+${topic}
+</Report topic>
+
+<Section name>
+${sectionName}
+</Section name>
+
+<Section topic>
+${sectionTopic}
+</Section topic>
+
+<Existing section content (if populated)>
+${sectionContent}
+</Existing section content>
+
+<Source material>
+${context}
+</Source material>
+"""
+`;
+
+export const sectionGraderInstructions = (
+  topic: string,
+  sectionTopic: string,
+  section: string,
+  numberOfFollowUpQueries: number
+) => `Review a report section relative to the specified topic:
+
+<Report topic>
+${topic}
+</Report topic>
+
+<section topic>
+${sectionTopic}
+</section topic>
+
+<section content>
+${section}
+</section content>
+
+<task>
+Evaluate whether the section content adequately addresses the section topic.
+
+If the section content does not adequately address the section topic, generate ${numberOfFollowUpQueries} follow-up search queries to gather missing information.
+</task>
+`;
+
+export const sectionGraderPrompt = `Grade the report and consider follow-up questions for missing information. 
+If the grade is 'fail', provide specific search queries to gather missing information.
+if the grade is 'pass', no follow-up queries are needed.
+`;

@@ -4,37 +4,61 @@ import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import type { SectionStateAnnotation } from "../agent/state";
 import { llm } from "../helpers/llm";
 import { Command, END } from "@langchain/langgraph";
-import { Nodes } from "../helpers/constants";
+import { Nodes, NUMBER_OF_QUERIES } from "../helpers/constants";
+import {
+  sectionGraderInstructions,
+  sectionGraderPrompt,
+  sectionWriterInstructions,
+  sectionWriterPrompt,
+} from "../agent/prompts";
 
 const outputSchema = z.object({
-  grade: z.enum(["pass", "fail"]),
-  followUpQueries: z.array(z.object({ search_query: z.string() })),
+  grade: z
+    .enum(["pass", "fail"])
+    .describe("whether the section passes or fails"),
+  followUpQueries: z
+    .string()
+    .array()
+    .describe("Follow-up queries to gather missing information"),
 });
 
 export const writeSectionNode = async (
   state: typeof SectionStateAnnotation.State
 ) => {
-  const { topic, section, source, researchLoopCount, searchIterations } = state;
+  const { topic, section, source, searchIterations } = state;
+
+  const prompt = sectionWriterPrompt(
+    topic,
+    section.title,
+    section.description,
+    source,
+    section.content ?? ""
+  );
 
   const newText = await llm.invoke([
     new SystemMessage({
-      content: `Write the "${section.title}" section for "${topic}". Use:\n${source}`,
+      content: sectionWriterInstructions,
     }),
-    new HumanMessage({ content: "Section text only." }),
+    new HumanMessage({ content: prompt }),
   ]);
 
   section.content = newText.content as string;
 
   const grader = llm.withStructuredOutput(outputSchema);
+
+  const systemMessage = sectionGraderInstructions(
+    topic,
+    section.description,
+    section.content,
+    1
+  );
+
   const { grade, followUpQueries } = await grader.invoke([
-    new SystemMessage({
-      content:
-        "Grade the section. If it misses info return grade='fail' and 3 follow‑up queries. If it's good return grade='pass' and an empty list.",
-    }),
-    new HumanMessage({ content: section.content }),
+    new SystemMessage({ content: systemMessage }),
+    new HumanMessage({ content: sectionGraderPrompt }),
   ]);
 
-  const hitDepthLimit = searchIterations >= researchLoopCount;
+  const hitDepthLimit = searchIterations >= 3;
 
   if (grade === "pass" || hitDepthLimit) {
     return new Command({
@@ -46,7 +70,6 @@ export const writeSectionNode = async (
   return new Command({
     update: {
       searchQueries: followUpQueries,
-      searchIterations,
       section,
     },
     goto: Nodes.WEB_SEARCH,
