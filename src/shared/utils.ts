@@ -3,7 +3,6 @@ import boxen from "boxen";
 import { tavily, type TavilySearchResponse } from "@tavily/core";
 
 import "dotenv/config";
-import { ChatOllama } from "@langchain/ollama";
 
 type ColorName = Bun.ColorInput;
 
@@ -23,6 +22,7 @@ export const getRandomThreadId = () => {
   return Math.random().toString(36).substring(7);
 };
 
+// TODO: investigate the color is not being applied in the terminal
 export const prettifyOutput = (
   content: string,
   colorName: ColorName = "white"
