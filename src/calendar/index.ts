@@ -1,10 +1,10 @@
-import { HumanMessage } from "@langchain/core/messages";
 import path from "path";
+import { HumanMessage } from "@langchain/core/messages";
+import { Command } from "@langchain/langgraph";
 
 import { graph } from "./agent/graph";
 import { drawGraph, getRandomThreadId, prettifyOutput } from "../shared/utils";
 import { closeDb, initializeDataSource } from "./helpers/db";
-import { Command } from "@langchain/langgraph";
 import { Nodes } from "./helpers/constants";
 
 const drawCalendarGraph = async () => {
@@ -36,7 +36,6 @@ const run = async () => {
     );
 
     for await (const chunk of await result) {
-      console.log("chunk", chunk);
       if (chunk[Nodes.SUMMARIZE_RESPONSE]) {
         const message = chunk[Nodes.SUMMARIZE_RESPONSE].messages[0].content;
         prettifyOutput(message, "green");
@@ -51,7 +50,9 @@ const run = async () => {
   }
 };
 
-// drawCalendarGraph();
+// drawCalendarGraph().catch((error) => {
+//   console.error("Error drawing the calendar graph:", error);
+// });
 
 run().catch((error) => {
   console.error("Error running the calendar agent:", error);

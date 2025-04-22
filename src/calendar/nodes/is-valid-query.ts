@@ -15,14 +15,10 @@ export const isValidQueryNode = async (
   const structuredLLM = llm.withStructuredOutput(outputSchema);
   const prompt = isValidSqlQueryPrompt(state.query);
 
-  const response = await structuredLLM.invoke([
-    new SystemMessage({
-      content: systemMessagePrompt(),
-    }),
+  const { isValid } = await structuredLLM.invoke([
+    new SystemMessage({ content: systemMessagePrompt() }),
     new HumanMessage({ content: prompt }),
   ]);
 
-  return {
-    isValid: response.isValid,
-  };
+  return { isValid };
 };

@@ -9,7 +9,7 @@ import { routerPrompt, systemMessagePrompt } from "../agent/prompts";
 const options = [Nodes.GENERAL, Nodes.GATHER_REQUIREMENTS] as const;
 
 const outputSchema = z.object({
-  router: z.enum(options),
+  next: z.enum(options),
 });
 
 export const routerNode = async (state: typeof AgentStateAnnotation.State) => {
@@ -18,16 +18,10 @@ export const routerNode = async (state: typeof AgentStateAnnotation.State) => {
   const prompt = routerPrompt(options, lastMessage?.content as string);
 
   const structuredLLM = llm.withStructuredOutput(outputSchema);
-  const response = await structuredLLM.invoke([
-    new SystemMessage({
-      content: systemMessagePrompt(),
-    }),
-    new HumanMessage({
-      content: prompt,
-    }),
+  const { next } = await structuredLLM.invoke([
+    new SystemMessage({ content: systemMessagePrompt() }),
+    new HumanMessage({ content: prompt }),
   ]);
 
-  return {
-    next: response.router,
-  };
+  return { next };
 };

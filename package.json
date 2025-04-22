@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "studio": "bunx @langchain/langgraph-cli@latest dev",
-    "calendar": "bun run src/calendar/index.ts"
+    "calendar": "bun run src/calendar/index.ts",
+    "research": "bun run src/research/index.ts"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",

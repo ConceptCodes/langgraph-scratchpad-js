@@ -33,12 +33,8 @@ export const gatherRequirementsNode = async (
   );
 
   const response = await structuredLLM.invoke([
-    new SystemMessage({
-      content: systemMessagePrompt(),
-    }),
-    new HumanMessage({
-      content: prompt,
-    }),
+    new SystemMessage({ content: systemMessagePrompt() }),
+    new HumanMessage({ content: prompt }),
   ]);
 
   const metadata: Record<string, string> = {};
@@ -46,13 +42,9 @@ export const gatherRequirementsNode = async (
   if (response.followupQuestions) {
     for (const question of response.followupQuestions) {
       const ans = interrupt(question);
-      if (ans) {
-        metadata[question] = ans;
-      }
+      if (ans) metadata[question] = ans;
     }
   }
 
-  return {
-    metadata,
-  };
+  return { metadata };
 };

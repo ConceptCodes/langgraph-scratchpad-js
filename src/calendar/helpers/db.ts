@@ -35,7 +35,7 @@ export class Event {
 
 export const AppDataSource = new DataSource({
   type: "sqlite",
-  database: "../events.sqlite",
+  database: "../calendar.sqlite",
   entities: [Event],
   synchronize: true,
   logging: ["query", "error"],

@@ -21,20 +21,12 @@ export const generalNode = async (state: typeof AgentStateAnnotation.State) => {
   const prompt = generalQuestionPrompt(parsedMessages);
 
   const structuredLLM = llm.withStructuredOutput(outputSchema);
-  const response = await structuredLLM.invoke([
-    new SystemMessage({
-      content: systemMessagePrompt(),
-    }),
-    new HumanMessage({
-      content: prompt,
-    }),
+  const { answer } = await structuredLLM.invoke([
+    new SystemMessage({ content: systemMessagePrompt() }),
+    new HumanMessage({ content: prompt }),
   ]);
 
   return {
-    messages: [
-      new AIMessage({
-        content: response.answer,
-      }),
-    ],
+    messages: [new AIMessage({ content: answer })],
   };
 };

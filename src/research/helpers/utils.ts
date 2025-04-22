@@ -13,7 +13,7 @@ Description: ${section.description}
 
 Requires Research: ${section.research}
 
-Content: ${section.content ? section.content : "[Not yet written]"}
+Content: ${section.content}"}
 `;
   });
   return formatted_str.trim();

@@ -160,13 +160,15 @@ For Introduction:
 - Include NO structural elements (no lists or tables)
 - No sources section needed
 
-For Conclusion/Summary:
+For Summary:
 - Use ## for section title (Markdown format)
 - 100-150 word limit
+
 - For comparative reports:
     * Must include a focused comparison table using Markdown table syntax
     * Table should distill insights from the report
     * Keep table entries clear and concise
+    
 - For non-comparative reports: 
     * Only use ONE structural element IF it helps distill the points made in the report:
     * Either a focused table comparing items present in the report (using Markdown table syntax)
@@ -185,9 +187,11 @@ For Conclusion/Summary:
 
 <Quality Checks>
 - For introduction: 50-100 word limit, # for report title, no structural elements, no sources section
+- For main content: 150-200 word limit, ## for section title, only ONE structural element at most
 - For conclusion: 100-150 word limit, ## for section title, only ONE structural element at most, no sources section
 - Markdown format
 - Do not include word count or any preamble in your response
+- Ensure the title is only present once at the beginning of the report
 </Quality Checks>`;
 
 export const sectionWriterInstructions = `Write one section of a research report.

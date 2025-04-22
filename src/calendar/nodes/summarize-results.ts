@@ -24,20 +24,12 @@ export const summarizeResultsNode = async (
     state.query
   );
 
-  const response = await structuredLLM.invoke([
-    new SystemMessage({
-      content: systemMessagePrompt(),
-    }),
-    new HumanMessage({
-      content: prompt,
-    }),
+  const { summary } = await structuredLLM.invoke([
+    new SystemMessage({ content: systemMessagePrompt() }),
+    new HumanMessage({ content: prompt }),
   ]);
 
   return {
-    messages: [
-      new AIMessage({
-        content: response.summary,
-      }),
-    ],
+    messages: [new AIMessage({ content: summary })],
   };
 };
