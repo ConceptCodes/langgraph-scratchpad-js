@@ -80,3 +80,4 @@ This will start the LangGraph Studio, where you can interact with the agents and
 *   [x] Add a conditional edge for execute query to jump back to generate query on failure.
 *   [ ] Implement weather checking functionality.
 *   [ ] Implement conflict checking and meeting time suggestions.
+*   [ ] Add a router to determine if a failed query should go to generate query or gather requirements node.
