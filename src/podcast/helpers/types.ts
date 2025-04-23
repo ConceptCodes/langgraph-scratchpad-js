@@ -1,10 +1,12 @@
 import z from "zod";
+import { SPEAKERS } from "./constants";
+
 
 export const scriptSchema = z.object({
   script: z.array(
     z
       .object({
-        speaker: z.enum(["Jack", "Jill"]),
+        speaker: z.enum(SPEAKERS),
         text: z.string(),
       })
       .describe(
@@ -99,7 +101,9 @@ export const podcastOutlineSchema = z
     ),
     mainSegments: z
       .array(mainSegmentSchema)
-      .describe("An array of the main discussion segments. NO CONCLUSION!"),
+      .describe(
+        "An array of the main discussion segments. Do not add a conclusion. Just add the main body segments."
+      ),
     summary: summarySectionSchema.describe(
       "The summary section, recapping key points."
     ),

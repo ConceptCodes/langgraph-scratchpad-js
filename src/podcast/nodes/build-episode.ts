@@ -10,6 +10,8 @@ export const buildEpisodeNode = async (
 
   const finalScript = completedSections.map((section) => section.script).flat();
 
+  console.log("Final script:", finalScript.length);
+
   return {
     script: { script: finalScript },
     title,

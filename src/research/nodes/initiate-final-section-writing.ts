@@ -7,8 +7,6 @@ export const initiateFinalSectionWritingNode = async (
 ) => {
   const { sections, reportSectionsFromResearch, topic } = state;
 
-  // NOTE: sections that don't require research
-
   return sections
     .filter((s) => !s.research)
     .map(

@@ -27,7 +27,7 @@ export const coverageCheckNode = async (
   switch (grade) {
     case "pass":
       return new Command({
-        goto: Nodes.GENERATE_DRAFT,
+        goto: Nodes.GENERATE_OUTLINE,
         update: {
           feedback: null,
         },

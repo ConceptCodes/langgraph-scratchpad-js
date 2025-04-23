@@ -26,6 +26,7 @@
     "@tavily/core": "^0.3.7",
     "boxen": "^8.0.1",
     "langchain": "^0.3.23",
+    "openai": "^4.96.0",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.22",
     "zod": "^3.24.3"

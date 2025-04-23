@@ -1,3 +1,4 @@
+import fs from "fs";
 import path from "path";
 
 import { graph } from "./agent/graph";
@@ -24,7 +25,15 @@ const run = async () => {
 
     try {
       const result = graph.invoke({ sourceMaterial: input });
-      console.log("Result:", result);
+
+      fs.writeFileSync(
+        path.join(__dirname, "assets", "result.json"),
+        JSON.stringify(result, null, 2)
+      );
+      console.log(
+        "Result saved to:",
+        path.join(__dirname, "assets", "result.json")
+      );
     } catch (error) {
       console.error("Error during graph execution:", error);
     }

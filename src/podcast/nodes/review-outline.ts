@@ -27,7 +27,7 @@ export const reviewOutlineNode = async (
   switch (grade) {
     case "pass":
       return new Command({
-        goto: Nodes.BUILD_SECTIONS,
+        goto: Nodes.BUILD_SECTION,
         update: { feedback: null },
       });
     case "fail":

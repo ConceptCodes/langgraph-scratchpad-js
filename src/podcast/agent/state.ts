@@ -26,6 +26,10 @@ export const OutputStateAnnotation = Annotation.Root({
     reducer: (a, b) => b ?? a,
     default: () => "",
   }),
+  audioFilePath: Annotation<string>({
+    reducer: (a, b) => b ?? a,
+    default: () => "",
+  }),
 });
 
 export const AgentStateAnnotation = Annotation.Root({
