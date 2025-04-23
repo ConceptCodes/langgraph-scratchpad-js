@@ -6,7 +6,7 @@ export const generateAudioNode = async (
 ): Promise<typeof AgentStateAnnotation.Update> => {
   const { script } = state;
 
-  const audioFilePath = await generateFullAudio(script);
+  const audioFilePath = await generateFullAudio(script!);
 
   return { audioFilePath };
 };
