@@ -2,6 +2,7 @@ import { START, END, StateGraph } from "@langchain/langgraph";
 
 import {
   AgentStateAnnotation,
+  ConfigurationStateAnnotation,
   InputStateAnnotation,
   OutputStateAnnotation,
 } from "./state";
@@ -16,7 +17,10 @@ import { generateOutlineNode } from "../nodes/generate-outline";
 import { executePlanNode } from "../nodes/build-all-sections";
 import { generateAudioNode } from "../nodes/generate-audio";
 
-const subGraph = new StateGraph(AgentStateAnnotation)
+const subGraph = new StateGraph(
+  { stateSchema: AgentStateAnnotation },
+  ConfigurationStateAnnotation
+)
   .addNode(Nodes.GENERATE_DRAFT, generateDraftNode)
   .addNode(Nodes.REVIEW_DRAFT, reviewDraftNode, {
     ends: [Nodes.GENERATE_DRAFT, END],
@@ -25,11 +29,14 @@ const subGraph = new StateGraph(AgentStateAnnotation)
   .addEdge(Nodes.GENERATE_DRAFT, Nodes.REVIEW_DRAFT)
   .compile();
 
-const workflow = new StateGraph({
-  stateSchema: AgentStateAnnotation,
-  input: InputStateAnnotation,
-  output: OutputStateAnnotation,
-})
+const workflow = new StateGraph(
+  {
+    stateSchema: AgentStateAnnotation,
+    input: InputStateAnnotation,
+    output: OutputStateAnnotation,
+  },
+  ConfigurationStateAnnotation
+)
   .addNode(Nodes.EXTRACT_KEY_INSIGHTS, extractKeyInsightsNode)
   .addNode(Nodes.COVERAGE_CHECK, coverageCheckNode, {
     ends: [Nodes.GENERATE_OUTLINE, Nodes.EXTRACT_KEY_INSIGHTS],

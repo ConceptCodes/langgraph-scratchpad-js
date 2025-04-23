@@ -6,6 +6,17 @@ import type {
   SectionType,
 } from "../helpers/types";
 
+export const ConfigurationStateAnnotation = Annotation.Root({
+  podcastTitle: Annotation<string>({
+    reducer: (a, b) => b ?? a,
+    default: () => "",
+  }),
+  podcastLanguage: Annotation<string>({
+    reducer: (a, b) => b ?? a,
+    default: () => "en",
+  }),
+});
+
 export const InputStateAnnotation = Annotation.Root({
   sourceMaterial: Annotation<string>({
     reducer: (a, b) => b ?? a,

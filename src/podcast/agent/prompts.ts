@@ -59,11 +59,16 @@ You are a professional podcast script writer. Using the extracted data, draft a 
 `;
 
 export const generateDraftPrompts = (
+  title: string,
+  lang: string,
   sourceMaterial: string,
   sectionType: string,
   sectionDetails: Sections
 ) => `
 Create a podcast script section of type "${sectionType}" based on:
+
+PODCAST TITLE: ${title}
+PODCAST LANGUAGE: ${lang}
 
 SOURCE:
 ${sourceMaterial}

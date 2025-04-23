@@ -29,7 +29,7 @@ const getAudio = async (text: string, speaker: Speaker) => {
 };
 
 export const generateFullAudio = async (data: Script) => {
-  const outputDir = path.resolve(__dirname, "..", "..", "..", "assets");
+  const outputDir = path.resolve(__dirname, "..", "assets");
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
