@@ -14,6 +14,10 @@ export const generateDraftNode = async (
   const { sourceMaterial, sectionType, section } = state;
 
   const structuredLLM = llm.withStructuredOutput(scriptSchema);
+  
+  console.log("Generating draft for section:", sectionType);
+  console.log("Section details:", section);
+
   const prompt = generateDraftPrompts(sourceMaterial, sectionType, section!);
 
   const draft = await structuredLLM.invoke([

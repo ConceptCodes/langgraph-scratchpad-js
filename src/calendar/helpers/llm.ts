@@ -1,10 +1,12 @@
 import { ChatOllama } from "@langchain/ollama";
 import { ChatOpenAI } from "@langchain/openai";
 
+const model = "gemma3:4b";
+
 const llm = new ChatOllama({
-    model: "gemma3:12b",
-    temperature: 0,
-  });
+  model,
+  temperature: 0,
+});
 
 // const llm = new ChatOpenAI({
 //   openAIApiKey: process.env.OPENAI_API_KEY,

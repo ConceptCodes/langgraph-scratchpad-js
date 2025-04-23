@@ -45,11 +45,6 @@ export const PODCAST_OUTLINE = `
   *   (If applicable) Guest input/discussion.
   *   **Transition:** Link segments smoothly.
 
-**5. (Optional) Mid-roll / Sponsor Break (Approx. [Time] minute)**
-  *   Clear transition into the break.
-  *   Sponsor message or brief interlude.
-  *   Clear transition back to the content.
-
 **6. Summary & Key Takeaways (Approx. [Time] minutes)**
   *   Briefly recap the main points discussed ([Sub-topic 1], [Sub-topic 2], etc.).
   *   Reiterate the most important message or takeaway for the listener.

@@ -28,9 +28,7 @@ export const reviewOutlineNode = async (
     case "pass":
       return new Command({
         goto: Nodes.BUILD_SECTIONS,
-        update: {
-          feedback: null,
-        },
+        update: { feedback: null },
       });
     case "fail":
       return new Command({

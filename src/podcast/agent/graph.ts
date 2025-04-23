@@ -22,12 +22,13 @@ const subGraph = new StateGraph(AgentStateAnnotation)
   .addEdge(Nodes.GENERATE_DRAFT, Nodes.REVIEW_DRAFT)
   .addConditionalEdges(
     Nodes.REVIEW_DRAFT,
-    (x: typeof AgentStateAnnotation.State) => (x.feedback ? "pass" : "fail"),
+    (x: typeof AgentStateAnnotation.State) => (x.feedback ? "fail" : "pass"),
     {
-      // pass: END,
+      pass: END,
       fail: Nodes.GENERATE_DRAFT,
     }
-  );
+  )
+  .compile();
 
 const workflow = new StateGraph({
   stateSchema: AgentStateAnnotation,
@@ -38,26 +39,26 @@ const workflow = new StateGraph({
   .addNode(Nodes.COVERAGE_CHECK, coverageCheckNode)
   .addNode(Nodes.GENERATE_OUTLINE, generateOutlineNode)
   .addNode(Nodes.REVIEW_OUTLINE, reviewOutlineNode)
-  .addNode(Nodes.BUILD_SECTIONS, subGraph.compile())
+  .addNode(Nodes.BUILD_SECTIONS, subGraph)
   .addNode(Nodes.BUILD_EPISODE, buildEpisodeNode);
 
 workflow.addEdge(START, Nodes.EXTRACT_KEY_INSIGHTS);
 workflow.addEdge(Nodes.EXTRACT_KEY_INSIGHTS, Nodes.COVERAGE_CHECK);
 workflow.addConditionalEdges(
   Nodes.COVERAGE_CHECK,
-  (x: typeof AgentStateAnnotation.State) => (x.feedback ? "pass" : "fail"),
+  (x: typeof AgentStateAnnotation.State) => (x.feedback ? "fail" : "pass"),
   {
-    pass: Nodes.EXTRACT_KEY_INSIGHTS,
-    fail: Nodes.GENERATE_OUTLINE,
+    pass: Nodes.GENERATE_OUTLINE,
+    fail: Nodes.EXTRACT_KEY_INSIGHTS,
   }
 );
 workflow.addEdge(Nodes.GENERATE_OUTLINE, Nodes.REVIEW_OUTLINE);
 workflow.addConditionalEdges(
   Nodes.REVIEW_OUTLINE,
-  (x: typeof AgentStateAnnotation.State) => (x.feedback ? "pass" : "fail"),
+  (x: typeof AgentStateAnnotation.State) => (x.feedback ? "fail" : "pass"),
   {
-    pass: Nodes.GENERATE_OUTLINE,
-    fail: Nodes.BUILD_SECTIONS,
+    pass: Nodes.BUILD_SECTIONS,
+    fail: Nodes.GENERATE_OUTLINE,
   }
 );
 workflow.addEdge(Nodes.BUILD_SECTIONS, Nodes.BUILD_EPISODE);

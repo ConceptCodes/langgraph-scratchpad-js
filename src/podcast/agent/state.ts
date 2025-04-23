@@ -22,7 +22,7 @@ export const OutputStateAnnotation = Annotation.Root({
     reducer: (a, b) => b ?? a,
     default: () => "",
   }),
-  summary: Annotation<string>({
+  description: Annotation<string>({
     reducer: (a, b) => b ?? a,
     default: () => "",
   }),

@@ -1,51 +1,42 @@
 import type { Sections } from "../helpers/types";
 
+// 1. Extract Key Insights Instructions
 export const extractKeyInsightInstructions = `
-You are a helpful assistant that extracts key insights from source material.
-Extract the main topics, quotes, and key insights from source material.
+You are an expert content analyst. Your task is to extract and organize the most important elements from raw source material.
 
-<Instructions>
-- Topics: List the main topics discussed in the source material.
-- Quotes: Provide notable quotes from the source material.
-- Insights: Summarize the key insights derived from the source material.
-</Instructions>>
+Requirements:
+  • Identify the main themes or subjects discussed (Topics).
+  • Select up to 5 memorable or impactful quotes, citing speaker or context if available (Quotes).
+  • Summarize the core ideas, takeaways, or lessons derived from the material (Insights).
 `;
 
 export const extractKeyInsightsPrompts = (source: string) => `
-Please extract the main topics, quotes, and key insights from the following source material:
+Extract key insights from the following content:
 
-<SOURCE_MATERIAL>
+---
 ${source}
-</SOURCE_MATERIAL>
+---
 `;
 
+// 2. Extract with Feedback Instructions
 export const extractKeyInsightsWithFeedbackInstructions = (
   feedback: string
 ) => `
-You are a helpful assistant that extracts key insights from source material.
-Extract the main topics, quotes, and key insights from source material.
-You have received feedback on the previous extraction attempt. Please consider <Feedback> while extracting the key insights.
+You are an expert content analyst. You received feedback:
 
-<Feedback>
-${feedback}
-</Feedback>
+"${feedback}"
 
-<Instructions>
-- Topics: List the main topics discussed in the source material.
-- Quotes: Provide notable quotes from the source material.
-- Insights: Summarize the key insights derived from the source material.
-- Feedback: ${feedback}
-</Instructions>
+Revise your extraction accordingly, ensuring you address the feedback and improve completeness and clarity.
 `;
 
+// 3. Coverage Check Instructions
 export const coverageCheckInstructions = `
-You are a helpful assistant checking the coverage of the key insights extracted from the source material.
-Check if the extracted key insights cover the main topics and quotes from the source material.
+You are a quality assessor for extracted insights. Compare the provided topics, quotes, and insights against the original source.
 
-<Instructions>
-- Grade: Provide a grade of "pass" or "fail" based on the coverage check.
-- Feedback: Provide feedback on the coverage check, including any missing topics or quotes.
-</Instructions>
+Tasks:
+  • Evaluate whether each topic and quote is adequately represented in the insights.
+  • Assign a grade of "pass" or "fail".
+  • If the grade is "fail", provide feedback on any missing or incomplete elements; if "pass", no feedback is needed.
 `;
 
 export const coverageCheckPrompts = (
@@ -53,30 +44,18 @@ export const coverageCheckPrompts = (
   quotes: string[],
   insights: string[]
 ) => `
-Please check the coverage of the key insights extracted from the source material based on the following information:
-
-<TOPICS>
-${topics.join(", ")}
-</TOPICS>
-
-<QUOTES>
-${quotes.join(", ")}
-</QUOTES>
-
-<INSIGHTS>
-${insights.join(", ")}
-</INSIGHTS>
+Assess coverage based on:
+  Topics: ${JSON.stringify(topics)}
+  Quotes: ${JSON.stringify(quotes)}
+  Insights: ${JSON.stringify(insights)}
 `;
 
+// 4. Generate Draft Instructions
 export const generateDraftInstructions = `
-You are a helpful assistant that generates a draft script for a podcast episode.
-Generate a draft script based on the main topics, quotes, and key insights extracted from the source material.
-
-<Instructions>
-- Include the main topics, quotes, and key insights in the draft script.
-- Ensure the draft script is coherent and follows a logical structure.
-- Use a conversational tone suitable for a podcast episode.
-</Instructions>
+You are a professional podcast script writer. Using the extracted data, draft a 500–700 word script that:
+  • Incorporates topics, quotes, and insights naturally.
+  • Maintains a conversational, engaging tone.
+  • Follows a clear structure: hook, body with sections, conclusion with a call-to-action.
 `;
 
 export const generateDraftPrompts = (
@@ -84,76 +63,46 @@ export const generateDraftPrompts = (
   sectionType: string,
   sectionDetails: Sections
 ) => `
-Please generate a draft script for a podcast episode based on the following information:
+Create a podcast script section of type "${sectionType}" based on:
 
-<SOURCE_MATERIAL>
+SOURCE:
 ${sourceMaterial}
-</SOURCE_MATERIAL>
 
-<SECTION_TYPE>
-${sectionType}
-</SECTION_TYPE>
-
-<SECTION_DETAILS>
+DETAILS:
 ${JSON.stringify(sectionDetails, null, 2)}
-</SECTION_DETAILS>
 `;
 
+// 5. Review Draft Instructions
 export const reviewDraftInstructions = `
-You are a helpful assistant that reviews a podcast draft script.
-Review the draft script based on the provided feedback and make necessary adjustments.
-<Instructions>
-- Review the draft script based on the provided feedback.
-- Make necessary adjustments to the script to improve clarity, coherence, and structure.
-- Ensure the script aligns with the desired tone and style for the podcast episode.
-- Provide feedback on the script, including any suggestions for improvement.
-</Instructions>
+You are an editorial coach. Review the provided draft script and apply the given feedback:
+
+Assign a grade of "pass" or "fail".
+  • If the grade is "fail", provide feedback on any missing or incomplete elements; if "pass", no feedback is needed.
 `;
 
 export const reviewDraftPrompts = (
   draft: Record<string, any>,
   sectionType: string
 ) => `
-Please review the following podcast draft script based on the provided feedback:
+Review the draft section ("${sectionType}"):
 
-<SECTION_TYPE>
-${sectionType}
-</SECTION_TYPE>
-
-<DRAFT_SCRIPT>
 ${JSON.stringify(draft, null, 2)}
-</DRAFT_SCRIPT>
 `;
 
+// 6. Generate Outline Instructions
 export const generateOutlineInstructions = (
   outlineSchema: string,
   topics: string[],
   quotes: string[],
   insights: string[]
 ) => `
-You are a helpful assistant that generates a podcast outline.
-Generate a podcast outline based on the following schema and information.
+You are a podcast content planner. Build an episode outline that:
+  • Follows this schema: ${outlineSchema}
+  • Integrates topics, quotes, and insights.
 
-<Outline Schema>
-${outlineSchema}
-</Outline Schema>
-
-<TOPICS>
-${topics.join(", ")}
-</TOPICS>
-
-<QUOTES>
-${quotes.join(", ")}
-</QUOTES>
-
-<INSIGHTS>
-${insights.join(", ")}
-</INSIGHTS>
-
-<Instructions>
-- Generate a podcast outline based on the provided schema and information.
-- Ensure the outline is coherent and follows a logical structure.
-</Instructions>
+Topics: ${topics.join(", ")}
+Quotes: ${quotes.join(", ")}
+Insights: ${insights.join(", ")}
 `;
 
 export const generateOutlineInstructionsWithFeedback = (
@@ -163,61 +112,32 @@ export const generateOutlineInstructionsWithFeedback = (
   quotes: string[],
   insights: string[]
 ) => `
-You are a helpful assistant that generates a podcast outline.
-Generate a podcast outline based on the following schema and information.
-You have received feedback on the previous outline attempt. Please consider <Feedback> while generating the podcast outline.
+You are a podcast content planner. You received feedback:
 
-<Feedback>
-${feedback}
-</Feedback>
+"${feedback}"
 
-<Outline Schema>
-${outlineSchema}
-</Outline Schema>
+Topics: ${topics.join(", ")}
+Quotes: ${quotes.join(", ")}
+Insights: ${insights.join(", ")}
 
-<TOPICS>
-${topics.join(", ")}
-</TOPICS>
-
-<QUOTES>
-${quotes.join(", ")}
-</QUOTES>
-
-<INSIGHTS>
-${insights.join(", ")}
-</INSIGHTS>
-
-<Instructions>
-- Generate a podcast outline based on the provided schema and information.
-- Ensure the outline is coherent and follows a logical structure.
-- Consider the feedback provided to improve the outline.
-</Instructions>
+Revise the outline to follow the schema (${outlineSchema}), integrating all topics, quotes, and insights.
 `;
 
 export const generateOutlinePrompts = (source: string) => `
-Please generate a podcast outline based on the following source material:
+Draft a podcast episode outline from this source material:
 
-<SOURCE_MATERIAL>
-${source}
-</SOURCE_MATERIAL>
+> ${source}
 `;
 
 export const reviewOutlineInstructions = `
-You are a helpful assistant that reviews a podcast outline.
-Review the podcast outline based on the provided feedback and make necessary adjustments.
-
-<Instructions>
-- Review the podcast outline based on the provided feedback.
-- Make necessary adjustments to the outline to improve clarity, coherence, and structure. 
-- Ensure the outline aligns with the desired tone and style for the podcast episode.
-- Provide feedback on the outline, including any suggestions for improvement.
-</Instructions>
+You are an editorial reviewer for podcast outlines. Given the outline and feedback:
+ 
+Assign a grade of "pass" or "fail".
+  • If the grade is "fail", provide feedback on any missing or incomplete elements; if "pass", no feedback is needed.
 `;
 
 export const reviewOutlinePrompts = (outline: string) => `
-Please review the following podcast outline based on the provided feedback:
+Review this podcast outline:
 
-<OUTLINE>
 ${outline}
-</OUTLINE>
 `;
