@@ -1,0 +1,13 @@
+import type { AgentStateAnnotation } from "../agent/state";
+
+export const buildEpisodeNode = async (
+  state: typeof AgentStateAnnotation.State
+): Promise<typeof AgentStateAnnotation.Update> => {
+  const { completedSections } = state;
+
+  const finalScript = completedSections.map((section) => section.script).flat();
+
+  return {
+    script: { script: finalScript },
+  };
+};
