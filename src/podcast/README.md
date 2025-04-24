@@ -47,7 +47,7 @@ The agent performs the following steps:
     ```bash
     bun run podcast <path-to-source-material>
     ```
-3.  Enter the source material when prompted. The final script (`script.txt`) and audio (`output.mp3`) will be saved in the `src/podcast/assets/` directory.
+3. The final script (`script.txt`) and audio (`output.mp3`) will be saved in the `src/podcast/assets/` directory.
 
 ## To Do
 
