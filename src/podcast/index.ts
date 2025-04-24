@@ -3,6 +3,7 @@ import path from "path";
 
 import { graph } from "./agent/graph";
 import { drawGraph } from "../shared/utils";
+import { formatDraft } from "./helpers/utils";
 
 const drawPodcastGraph = async () => {
   const filepath = path.join(__dirname, "assets", "graph.png");
@@ -13,30 +14,23 @@ const drawPodcastGraph = async () => {
 const run = async () => {
   // await drawPodcastGraph(); // Uncomment to draw graph on run
 
-  let isRunning = true;
-  while (isRunning) {
-    const input = prompt("Input: ");
+  const filePath = process.argv[2];
+  if (!filePath) {
+    console.error("Please provide the path to the source material file.");
+    process.exit(1);
+  }
+  const sourceMaterial = fs.readFileSync(filePath, "utf-8");
+  console.log("Source material content length", sourceMaterial.length);
 
-    if (!input || input.toLowerCase() === "exit") {
-      console.log("Exiting...");
-      isRunning = false;
-      break;
-    }
+  try {
+    const result = await graph.invoke({ sourceMaterial });
+    const formattedScript = formatDraft(result.script!);
+    const outputPath = path.join(__dirname, "assets", "script.txt");
 
-    try {
-      const result = graph.invoke({ sourceMaterial: input });
-
-      fs.writeFileSync(
-        path.join(__dirname, "assets", "result.json"),
-        JSON.stringify(result, null, 2)
-      );
-      console.log(
-        "Result saved to:",
-        path.join(__dirname, "assets", "result.json")
-      );
-    } catch (error) {
-      console.error("Error during graph execution:", error);
-    }
+    fs.writeFileSync(outputPath, formattedScript);
+    console.log("Result saved to:", outputPath);
+  } catch (error) {
+    console.error("Error during graph execution:", error);
   }
 };
 

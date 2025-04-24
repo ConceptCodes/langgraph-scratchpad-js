@@ -1,4 +1,3 @@
-import z from "zod";
 import { Command } from "@langchain/langgraph";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 
@@ -14,10 +13,10 @@ import { outputSchema } from "../helpers/types";
 export const coverageCheckNode = async (
   state: typeof AgentStateAnnotation.State
 ) => {
-  const { topics, quotes, insights } = state;
+  const { topics, quotes, insights, sourceMaterial } = state;
 
   const structuredLLM = llm.withStructuredOutput(outputSchema);
-  const prompt = coverageCheckPrompts(topics, quotes, insights);
+  const prompt = coverageCheckPrompts(topics, quotes, insights, sourceMaterial);
 
   const { grade, feedback } = await structuredLLM.invoke([
     new SystemMessage({ content: coverageCheckInstructions }),

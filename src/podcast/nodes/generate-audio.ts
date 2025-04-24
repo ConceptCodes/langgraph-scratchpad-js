@@ -9,4 +9,5 @@ export const generateAudioNode = async (
   const audioFilePath = await generateFullAudio(script!);
 
   return { audioFilePath };
+  // return {}
 };

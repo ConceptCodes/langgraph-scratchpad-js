@@ -6,14 +6,16 @@ import { reviewDraftInstructions, reviewDraftPrompts } from "../agent/prompts";
 import type { AgentStateAnnotation } from "../agent/state";
 import { outputSchema } from "../helpers/types";
 import { Nodes } from "../helpers/constants";
+import { formatDraft } from "../helpers/utils";
 
 export const reviewDraftNode = async (
   state: typeof AgentStateAnnotation.State
 ) => {
   const { draft, sectionType } = state;
+  const formattedDraft = formatDraft(draft!);
   const structuredLLM = llm.withStructuredOutput(outputSchema);
 
-  const prompt = reviewDraftPrompts(draft!, sectionType);
+  const prompt = reviewDraftPrompts(formattedDraft, sectionType);
 
   const { grade, feedback } = await structuredLLM.invoke([
     new SystemMessage({ content: reviewDraftInstructions }),

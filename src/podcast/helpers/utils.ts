@@ -46,3 +46,7 @@ export const generateFullAudio = async (data: Script) => {
 
   return outputFile;
 };
+
+export const formatDraft = (draft: Script) => {
+  return draft.script.map((item) => `${item.speaker}: ${item.text}`).join("\n");
+};

@@ -1,7 +1,6 @@
 import z from "zod";
 import { SPEAKERS } from "./constants";
 
-
 export const scriptSchema = z.object({
   script: z.array(
     z

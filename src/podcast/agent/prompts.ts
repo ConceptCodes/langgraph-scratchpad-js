@@ -2,12 +2,14 @@ import type { Sections } from "../helpers/types";
 
 // 1. Extract Key Insights Instructions
 export const extractKeyInsightInstructions = `
-You are an expert content analyst. Your task is to extract and organize the most important elements from raw source material.
+You are an expert content analyst. Your task is to extract and organize the most important elements from raw source material, so they can form the backbone of a seamless podcast story.
 
 Requirements:
-  • Identify the main themes or subjects discussed (Topics).
-  • Select up to 5 memorable or impactful quotes, citing speaker or context if available (Quotes).
-  • Summarize the core ideas, takeaways, or lessons derived from the material (Insights).
+  • Topics: Identify the 3–5 core themes or subjects.
+  • Quotes: Pick up to 5 vivid quotes (with speaker/context).
+  • Insights: Summarize the core takeaways or lessons.
+  
+Output as JSON with keys: topics, quotes, insights.
 `;
 
 export const extractKeyInsightsPrompts = (source: string) => `
@@ -18,7 +20,6 @@ ${source}
 ---
 `;
 
-// 2. Extract with Feedback Instructions
 export const extractKeyInsightsWithFeedbackInstructions = (
   feedback: string
 ) => `
@@ -29,35 +30,106 @@ You are an expert content analyst. You received feedback:
 Revise your extraction accordingly, ensuring you address the feedback and improve completeness and clarity.
 `;
 
-// 3. Coverage Check Instructions
+// 2. Coverage Check Instructions
 export const coverageCheckInstructions = `
-You are a quality assessor for extracted insights. Compare the provided topics, quotes, and insights against the original source.
+You are a quality assessor for the extracted insights. Compare the provided topics, quotes, and insights against the original source.
 
 Tasks:
-  • Evaluate whether each topic and quote is adequately represented in the insights.
-  • Assign a grade of "pass" or "fail".
-  • If the grade is "fail", provide feedback on any missing or incomplete elements; if "pass", no feedback is needed.
+  • Check that each topic appears in at least one insight.
+  • Verify quotes are represented in the narrative.
+  • Grade "pass" or "fail."  
+  • On "fail," list exactly which topic/quote/insight is missing or needs expansion.
 `;
 
 export const coverageCheckPrompts = (
   topics: string[],
   quotes: string[],
-  insights: string[]
+  insights: string[],
+  sourceMaterial: string
 ) => `
 Assess coverage based on:
   Topics: ${JSON.stringify(topics)}
   Quotes: ${JSON.stringify(quotes)}
   Insights: ${JSON.stringify(insights)}
+
+Original Source:
+${sourceMaterial}
 `;
 
-// 4. Generate Draft Instructions
+// 3. Generate Draft Instructions
 export const generateDraftInstructions = `
-You are a professional podcast script writer. Using the extracted data, draft a 500–700 word script that:
-  • Incorporates topics, quotes, and insights naturally.
-  • Maintains a conversational, engaging tone.
-  • Follows a clear structure: hook, body with sections, conclusion with a call-to-action.
+You are a professional podcast script writer. Produce a 500–700 word section that:
+  • Feels like part of one cohesive episode.
+  • Uses a consistent, conversational voice.
+  • Integrates previous sections via explicit transitions.
+  • Avoids standalone "mini-episodes."
+
+<Rules>
+- Intro: Open with a warm welcome once; set up the topic and arc.
+- Main:  
+    • Begin with a transition back to the intro (e.g., “Picking up where we left off…”).
+    • Dive deeper into subtopics in sequence.
+    • Weave in quotes and insights naturally as examples.
+- Outro:  
+    • Summarize key points.
+    • Circle back to opening hook.
+    • Tease what’s next (if part of a series).
+
+<Constraints>
+- Never use "today" or "this episode."
+- SectionType controls structure—don’t treat “main” like an intro.
 `;
 
+export const generateDraftInstructionsWithFeedback = (
+  feedback: string,
+  title: string,
+  lang: string,
+  sourceMaterial: string,
+  sectionDetails: Sections
+) => `
+You are revising a draft per this feedback:
+"${feedback}"
+
+Apply these rules:
+- Maintain consistent voice and narrative flow.
+- Use transitions that reference both the last section and the upcoming one.
+- Ensure quotes/insights plug directly into your story.
+
+PODCAST TITLE: ${title}
+LANGUAGE: ${lang}
+
+SECTION_DETAILS:
+${JSON.stringify(sectionDetails, null, 2)}
+
+SOURCE:
+${sourceMaterial}
+
+<Constraints same as generateDraftInstructions above>
+`;
+
+// 4. Generate Section Prompt (new helper)
+export const generateSectionPrompt = (
+  title: string,
+  lang: string,
+  sourceMaterial: string,
+  sectionType: string,
+  sectionDetails: Sections
+) => `
+Create the "${sectionType}" section for our podcast:
+
+Episode: **${title}**
+Language: **${lang}**
+
+SECTION_INFO:
+${JSON.stringify(sectionDetails, null, 2)}
+
+SOURCE:
+${sourceMaterial}
+
+<Use the rules from generateDraftInstructions>
+`;
+
+// Original helpers (unchanged)
 export const generateDraftPrompts = (
   title: string,
   lang: string,
@@ -70,14 +142,16 @@ Create a podcast script section of type "${sectionType}" based on:
 PODCAST TITLE: ${title}
 PODCAST LANGUAGE: ${lang}
 
+SECTION_DETAILS:
+${JSON.stringify(sectionDetails, null, 2)}
+
+<Constraint>
+- Only welcome the audience in the intro section.
+
 SOURCE:
 ${sourceMaterial}
-
-DETAILS:
-${JSON.stringify(sectionDetails, null, 2)}
 `;
 
-// 5. Review Draft Instructions
 export const reviewDraftInstructions = `
 You are an editorial coach. Review the provided draft script and apply the given feedback:
 
@@ -85,16 +159,13 @@ Assign a grade of "pass" or "fail".
   • If the grade is "fail", provide feedback on any missing or incomplete elements; if "pass", no feedback is needed.
 `;
 
-export const reviewDraftPrompts = (
-  draft: Record<string, any>,
-  sectionType: string
-) => `
-Review the draft section ("${sectionType}"):
+export const reviewDraftPrompts = (draft: string, sectionType: string) => `
+Review the draft of section type ("${sectionType}"):
 
-${JSON.stringify(draft, null, 2)}
+Draft:
+${draft}
 `;
 
-// 6. Generate Outline Instructions
 export const generateOutlineInstructions = (
   outlineSchema: string,
   topics: string[],
@@ -103,11 +174,15 @@ export const generateOutlineInstructions = (
 ) => `
 You are a podcast content planner. Build an episode outline that:
   • Follows this schema: ${outlineSchema}
-  • Integrates topics, quotes, and insights.
+  • Integrates <Topics>, <Quotes>, and <Insights> into the outline.
 
-Topics: ${topics.join(", ")}
-Quotes: ${quotes.join(", ")}
-Insights: ${insights.join(", ")}
+<Topics>${topics.join(", ")}</Topics>
+<Quotes>
+${quotes.join("\n")}
+</Quotes> 
+<Insights>
+${insights.join("\n")}
+</Insights>
 `;
 
 export const generateOutlineInstructionsWithFeedback = (
@@ -117,13 +192,17 @@ export const generateOutlineInstructionsWithFeedback = (
   quotes: string[],
   insights: string[]
 ) => `
-You are a podcast content planner. You received feedback:
+You are a podcast content planner. You received feedback on your previous outline:
 
 "${feedback}"
 
-Topics: ${topics.join(", ")}
-Quotes: ${quotes.join(", ")}
-Insights: ${insights.join(", ")}
+<Topics>${topics.join(", ")}</Topics>
+<Quotes>
+${quotes.join("\n")}
+</Quotes> 
+<Insights>
+${insights.join("\n")}
+</Insights>
 
 Revise the outline to follow the schema (${outlineSchema}), integrating all topics, quotes, and insights.
 `;
@@ -145,4 +224,14 @@ export const reviewOutlinePrompts = (outline: string) => `
 Review this podcast outline:
 
 ${outline}
+`;
+
+export const reviewEpisodeInstructions = `
+You are a podcast script reviewer. Review the provided script and apply the given feedback:
+Assign a grade of "pass" or "fail".
+  • If the grade is "fail", provide feedback on any missing or incomplete elements; if "pass", no feedback is needed.
+`;
+export const reviewEpisodePrompts = (script: string) => `
+Review this podcast script:
+${script}
 `;

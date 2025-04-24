@@ -3,6 +3,8 @@
 This module implements a LangGraph agent designed to automate the process of researching a given topic and generating a structured report.
 Heavily inspired by the [LangSmith Research Agent](https://github.com/langchain-ai/open_deep_research)
 
+Examples are provided in the `assets` directory.
+
 ## Architecture
 
 ![Research Agent Architecture](/assets/graph.png)

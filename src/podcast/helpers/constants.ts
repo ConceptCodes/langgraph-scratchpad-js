@@ -11,6 +11,8 @@ export enum Nodes {
   REVIEW_DRAFT = "REVIEW_DRAFT",
 
   BUILD_EPISODE = "BUILD_EPISODE",
+  REVIEW_EPISODE = "REVIEW_EPISODE",
+
   GENERATE_AUDIO = "GENERATE_AUDIO",
 }
 
@@ -36,7 +38,6 @@ export const PODCAST_OUTLINE = `
 **2. Main Segment 1: [Sub-topic 1 Title] (Approx. [Time] minutes)**
   *   Introduce the first key point or aspect of the main topic.
   *   Provide details, explanations, examples, data, or stories related to this sub-topic.
-  *   (If applicable) Guest input/discussion on this point.
   *   **Transition:** Link this segment to the next one.
 
 **3. Main Segment 2: [Sub-topic 2 Title] (Approx. [Time] minutes)**
