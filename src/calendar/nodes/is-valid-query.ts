@@ -12,11 +12,14 @@ const outputSchema = z.object({
 export const isValidQueryNode = async (
   state: typeof AgentStateAnnotation.State
 ) => {
+  const { query, messages, metadata } = state;
   const structuredLLM = llm.withStructuredOutput(outputSchema);
-  const prompt = isValidSqlQueryPrompt(state.query);
+  const lastMessage = messages.at(-1)?.content as string;
+
+  const prompt = isValidSqlQueryPrompt(query, lastMessage, metadata);
 
   const { isValid } = await structuredLLM.invoke([
-    new SystemMessage({ content: systemMessagePrompt() }),
+    new SystemMessage({ content: systemMessagePrompt }),
     new HumanMessage({ content: prompt }),
   ]);
 

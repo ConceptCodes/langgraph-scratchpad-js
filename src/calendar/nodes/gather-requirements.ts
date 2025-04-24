@@ -33,7 +33,7 @@ export const gatherRequirementsNode = async (
   );
 
   const response = await structuredLLM.invoke([
-    new SystemMessage({ content: systemMessagePrompt() }),
+    new SystemMessage({ content: systemMessagePrompt }),
     new HumanMessage({ content: prompt }),
   ]);
 

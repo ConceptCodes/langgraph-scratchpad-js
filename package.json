@@ -8,7 +8,8 @@
     "calendar": "bun run src/calendar/index.ts",
     "research": "bun run src/research/index.ts",
     "multi_agent": "bun run src/multi_agent/index.ts",
-    "podcast": "bun run src/podcast/index.ts"
+    "podcast": "bun run src/podcast/index.ts",
+    "react": "bun run src/react/index.ts"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",

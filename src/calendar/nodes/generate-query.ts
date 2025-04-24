@@ -14,21 +14,23 @@ const outputSchema = z.object({
 export const generateQueryNode = async (
   state: typeof AgentStateAnnotation.State
 ) => {
-  const lastMessage = state.messages.at(-1);
+  const { messages, metadata, queryError, queryResults } = state;
+  const lastMessage = messages.at(-1);
   const structuredLLM = llm.withStructuredOutput(outputSchema);
-
-  const messages = state.messages.map((message) => message.content as string);
+  const formattedMessages = messages.map(
+    (message) => message.content as string
+  );
 
   const prompt = generateSqlQueryPrompt(
     lastMessage?.content as string,
-    messages,
-    state.queryResults,
-    state.metadata,
-    state.queryError.message
+    formattedMessages,
+    queryResults,
+    metadata,
+    queryError.message
   );
 
   const { query } = await structuredLLM.invoke([
-    new SystemMessage({ content: systemMessagePrompt() }),
+    new SystemMessage({ content: systemMessagePrompt }),
     new HumanMessage({ content: prompt }),
   ]);
 

@@ -25,7 +25,7 @@ export const summarizeResultsNode = async (
   );
 
   const { summary } = await structuredLLM.invoke([
-    new SystemMessage({ content: systemMessagePrompt() }),
+    new SystemMessage({ content: systemMessagePrompt }),
     new HumanMessage({ content: prompt }),
   ]);
 

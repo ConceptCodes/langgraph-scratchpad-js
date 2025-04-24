@@ -3,8 +3,7 @@ import { Event } from "../helpers/db";
 
 const schema = await getAllTableSchemas();
 
-export const systemMessagePrompt = () => `
-You are **Calendar‑GPT**, an assistant that schedules, updates, and reads events with as few questions as possible.
+export const systemMessagePrompt = `You are **Calendar‑GPT**, an assistant that schedules, updates, and reads events with as few questions as possible.
 
 General Principles
 • Parse natural‑language dates, times, and durations on your own.  
@@ -54,16 +53,24 @@ ${JSON.stringify(chatHistory, null, 2)}
 Based on the <UserRequest>, list any specific follow-up questions needed.
 `;
 
-export const isValidSqlQueryPrompt = (query: string) => `
-You are SQL‑Lint.
+export const isValidSqlQueryPrompt = (
+  query: string,
+  userRequest: string,
+  metadata: Record<string, string>
+) => `
+You are SQL‑Lint. Your job is to check if the following SQL query is valid SQLite syntax and safe to execute.
+Also ensure this sql query is related to the <UserRequest>.
 
-<Constraint>
-- title is non-nullable
-- start_time is non-nullable
-- end_time is non-nullable
-</Constraint>
+<Query>
+${query}
+</Query>
 
-<SQL>${query}</SQL>
+<UserRequest>${userRequest}</UserRequest>
+
+<Metadata>
+${JSON.stringify(metadata)}
+</Metadata>
+
 `;
 
 export const generateSqlQueryPrompt = (
@@ -76,7 +83,6 @@ export const generateSqlQueryPrompt = (
 Generate a sqlite query based on the user's request and the context below.
 
 <Constraint>
-• Table names & columns must exist in <Schema>.
 • **For INSERT statements into the 'events' table, do NOT include the 'id' column. It is generated automatically.**
 • Generate only a single, valid SQL statement.
 </Constraint>
@@ -122,13 +128,10 @@ export const generateSummaryPrompt = (
   userRequest: string,
   query: string
 ) => `
-Summarize the SQL result for the end‑user in 1‑3 sentences.
+Summarize the <Results> for the end‑user in 1‑3 sentences.
 
 <Constraint>
 - Do NOT expose raw SQL or internal IDs.
-- Convert JSON to natural language.
-- Use the first person ("I") to refer to yourself.
-- Use the second person ("you") to refer to the user.
 </Constraint>
 
 <UserRequest>${userRequest}</UserRequest>
@@ -145,23 +148,39 @@ export const generalQuestionPrompt = (
 ) => `Answer the user's question based on the past conversation.
 
 <Constraint>
-- if the question is not related to the past conversation, say "Sorry, I can only help you with managing your calendar."
+- if the <UserRequest> is not related to the <ChatHistory>, say "Sorry, I can only help you with managing your calendar."
 </Constraint>
 
-<ConversationHistory>
+<ChatHistory>
 ${JSON.stringify(messages, null, 2)}
-</ConversationHistory>
+</ChatHistory>
 
 <UserRequest>${messages[messages.length - 1]}</UserRequest>
 `;
 
-export const routerPrompt = (nodes: any, userRequest: string) => `
-Given the user's request, choose the most appropriate node to handle it.
-<Nodes>${nodes.join(", ")}</Nodes>
+export const routerPrompt = (
+  nodes: any,
+  userRequest: string,
+  chatHistory: string[] = []
+) => `
+You are a smart router for a calendar assistant. Your job is to select the single most appropriate node from the list below to handle the user's request.
+
+<Nodes>
+${nodes.map((n: string) => `- ${n}`).join("\n")}
+</Nodes>
 
 <Constraint>
-- only use the general node if the request is not related to creating/listing/updating/deleting an event.
+- Only use the "gather requirements" node if the request is related to creating, listing, updating, or deleting an event.
+- If the request is ambiguous, choose the general node.
 </Constraint>
 
-<UserRequest>${userRequest}</UserRequest>
+<UserRequest>
+${userRequest}
+</UserRequest>
+
+<ChatHistory>
+${JSON.stringify(chatHistory, null, 2)}
+</ChatHistory>
+
+Respond ONLY with the name of the selected node.
 `;

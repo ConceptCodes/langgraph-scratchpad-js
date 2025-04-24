@@ -22,7 +22,7 @@ export const generalNode = async (state: typeof AgentStateAnnotation.State) => {
 
   const structuredLLM = llm.withStructuredOutput(outputSchema);
   const { answer } = await structuredLLM.invoke([
-    new SystemMessage({ content: systemMessagePrompt() }),
+    new SystemMessage({ content: systemMessagePrompt }),
     new HumanMessage({ content: prompt }),
   ]);
 
