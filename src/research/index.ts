@@ -4,12 +4,14 @@ import fs from "fs";
 import { drawGraph } from "../shared/utils";
 import { graph } from "./agent/graph";
 
-const drawCalendarGraph = async () => {
+const drawResearchGraph = async () => {
   const filepath = path.join(__dirname, "assets", "graph.png");
   drawGraph(graph, filepath);
 };
 
 const run = async () => {
+  // drawResearchGraph()
+
   const topic = prompt("Enter the topic of the research: ");
 
   if (!topic) {
@@ -34,10 +36,6 @@ const run = async () => {
   );
   console.log(`Report saved to ./assets/${cleanTitle}.md`);
 };
-
-// drawCalendarGraph().catch((error) => {
-//   console.error("Error drawing the calendar graph:", error);
-// });
 
 run().catch((error) => {
   console.error("Error running the research agent:", error);
