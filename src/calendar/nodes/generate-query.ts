@@ -17,13 +17,9 @@ export const generateQueryNode = async (
   const { messages, metadata, queryError, queryResults } = state;
   const lastMessage = messages.at(-1);
   const structuredLLM = llm.withStructuredOutput(outputSchema);
-  const formattedMessages = messages.map(
-    (message) => message.content as string
-  );
 
   const prompt = generateSqlQueryPrompt(
     lastMessage?.content as string,
-    formattedMessages,
     queryResults,
     metadata,
     queryError.message

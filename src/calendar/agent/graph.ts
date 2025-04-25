@@ -5,11 +5,12 @@ import { generateQueryNode } from "../nodes/generate-query";
 import { isValidQueryNode } from "../nodes/is-valid-query";
 import { executeQueryNode } from "../nodes/execute-query";
 import { summarizeResultsNode } from "../nodes/summarize-results";
+import { routerNode } from "../nodes/router";
+import { generalNode } from "../nodes/general";
+import { confirmationNode } from "../nodes/confirmation";
 
 import { Nodes } from "../helpers/constants";
 import { AgentStateAnnotation, InputStateAnnotation } from "../agent/state";
-import { routerNode } from "../nodes/router";
-import { generalNode } from "../nodes/general";
 
 const workflow = new StateGraph({
   stateSchema: AgentStateAnnotation,
@@ -20,6 +21,9 @@ const workflow = new StateGraph({
   .addNode(Nodes.GATHER_REQUIREMENTS, gatherRequirementsNode)
   .addNode(Nodes.GENERATE_QUERY, generateQueryNode)
   .addNode(Nodes.IS_VALID_QUERY, isValidQueryNode)
+  .addNode(Nodes.CONFIRM_QUERY, confirmationNode, {
+    ends: [Nodes.EXECUTE_QUERY, END],
+  })
   .addNode(Nodes.EXECUTE_QUERY, executeQueryNode)
   .addNode(Nodes.SUMMARIZE_RESPONSE, summarizeResultsNode);
 
@@ -39,7 +43,7 @@ workflow.addConditionalEdges(
   (x: typeof AgentStateAnnotation.State) =>
     x.isValid ? "approved" : "rejected",
   {
-    approved: Nodes.EXECUTE_QUERY,
+    approved: Nodes.CONFIRM_QUERY,
     rejected: Nodes.GENERATE_QUERY,
   }
 );

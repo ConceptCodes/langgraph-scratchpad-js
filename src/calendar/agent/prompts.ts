@@ -75,7 +75,6 @@ ${JSON.stringify(metadata)}
 
 export const generateSqlQueryPrompt = (
   userRequest: string,
-  chatHistory: string[] = [],
   queryResults: Event[] = [],
   metadata: Record<string, string> = {},
   previousError: string | null = null
@@ -109,14 +108,6 @@ ${JSON.stringify(queryResults)}
 <Metadata>
 ${JSON.stringify(metadata)}
 </Metadata>
-`
-    : ""
-}${
-  chatHistory.length > 0
-    ? `
-<ChatHistory>
-${JSON.stringify(chatHistory, null, 2)}
-</ChatHistory>
 `
     : ""
 }
@@ -183,4 +174,34 @@ ${JSON.stringify(chatHistory, null, 2)}
 </ChatHistory>
 
 Respond ONLY with the name of the selected node.
+`;
+
+export const conflictCheckPrompt = (
+  userRequest: string,
+  chatHistory: string[] = []
+) => `
+You are a smart conflict checker for a calendar assistant. Your job is to generate a sql query to check if the user's request conflicts with existing events.
+
+<Constraint>
+- If the request is related to listing events, do not check for conflicts.
+- If the request is related to updating or deleting an event, check for conflicts with the existing events.
+</Constraint>
+
+<ChatHistory>
+${JSON.stringify(chatHistory, null, 2)}
+</ChatHistory>
+
+<UserRequest>${userRequest}</UserRequest>
+`;
+
+export const userConfirmationPrompt = (
+  sqlQuery: string,
+  userRequest: string
+) => `
+Your job is the take the users request and generated sql query and generate a confirmation message for the user. 
+Try to explain to the user in simple english what the sql query is attempting to do and if thats something they want to do.
+
+<Query>${sqlQuery}</Query>
+
+<UserRequest>${userRequest}</UserRequest>
 `;
