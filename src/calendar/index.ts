@@ -17,6 +17,8 @@ const config = { configurable: { thread_id: getRandomThreadId() } };
 await initializeDataSource();
 
 const run = async () => {
+  // drawCalendarGraph();
+
   let isRunning = true;
   while (isRunning) {
     const input = prompt("Question: ");
@@ -54,11 +56,7 @@ const run = async () => {
   }
 };
 
-drawCalendarGraph().catch((error) => {
-  console.error("Error drawing the calendar graph:", error);
+run().catch((error) => {
+  console.error("Error running the calendar agent:", error);
+  closeDb();
 });
-
-// run().catch((error) => {
-//   console.error("Error running the calendar agent:", error);
-//   closeDb();
-// });
