@@ -54,11 +54,11 @@ const run = async () => {
   }
 };
 
-// drawCalendarGraph().catch((error) => {
-//   console.error("Error drawing the calendar graph:", error);
-// });
-
-run().catch((error) => {
-  console.error("Error running the calendar agent:", error);
-  closeDb();
+drawCalendarGraph().catch((error) => {
+  console.error("Error drawing the calendar graph:", error);
 });
+
+// run().catch((error) => {
+//   console.error("Error running the calendar agent:", error);
+//   closeDb();
+// });
