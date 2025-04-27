@@ -23,16 +23,16 @@ export const gatherRequirementsPrompt = (
   userRequest: string,
   chatHistory: string[] = []
 ) => `
-Task: Decide whether follow‑up questions are needed **before** acting on the user's request to manage calendar events. Your goal is to gather all necessary information with minimal interaction.
+Task: Decide whether follow‑up questions are needed. Your goal is to gather all necessary information to create/update/delete an event(s).
 
 <Constraint>
-When creating an event (CREATE):
+(CREATE):
   • title: First, attempt to infer the event title from the user's request (e.g., the action/object phrase like "walk my dog", "meeting with John"). If a title cannot be reasonably and unambiguously inferred, you MUST ask the user for the event title.
   • start_time: This is required. If not provided or inferable, ask for it.
   • end_time or duration: One of these is required unless it's an all-day event. If neither end_time nor duration can be reasonably and unambiguously inferred, you must ask for the end_time.
   • all_day: Assume 'false' unless explicitly stated (e.g., "all-day", "the whole day").
 
-When updating or deleting an event (UPDATE / DELETE):
+(UPDATE / DELETE):
   • Ask for clarification *only* if the target event cannot be reasonably and unambiguously inferred (e.g., multiple events match the description, no specific ID is given, the date/time is unclear).
 </Constraint>
 
@@ -81,7 +81,7 @@ export const generateSqlQueryPrompt = (
 Generate a sqlite query based on the user's request and the context below.
 
 <Constraint>
-• **For INSERT statements into the 'events' table, do NOT include the 'id' column. It is generated automatically.**
+• **For INSERT statements do NOT include the 'id' column. It is generated automatically.**
 • Generate only a single, valid SQL statement.
 </Constraint>
 
@@ -126,7 +126,7 @@ Summarize the <Results> for the end‑user in 1‑3 sentences.
 
 <UserRequest>${userRequest}</UserRequest>
 
-<ExecutedSQL>${query}</ExecutedSQL>
+<ExecutedSQLQuery>${query}</ExecutedSQLQuery>
 
 <Results>
 ${JSON.stringify(queryResults)}
@@ -160,7 +160,7 @@ export const routerPrompt = (
   userRequest: string,
   chatHistory: string[] = []
 ) => `
-You are a smart router for a calendar assistant. Your job is to select the single most appropriate node from the list below to handle the user's request.
+You are a smart router for a calendar assistant ai. Your job is to select the single most appropriate node from the list below to handle the user's request.
 
 <Nodes>
 ${nodes.map((n: string) => `- ${n}`).join("\n")}

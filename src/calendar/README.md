@@ -56,17 +56,6 @@ bun run calendar
 
 This script initializes the database connection, sets up the graph, and enters a loop prompting the user for input. It streams updates from the graph execution and handles interruptions for follow-up questions.
 
-<!-- Example Interaction:
-
-```
-Question: Schedule a meeting with Bob tomorrow at 2 PM for 1 hour
-chunk { summarize_response: { messages: [ [Object] ] } }
-Okay, I've scheduled a meeting with Bob for tomorrow at 2:00 PM for 1 hour.
-Question: What events do I have tomorrow?
-chunk { summarize_response: { messages: [ [Object] ] } }
-Tomorrow you have: Meeting with Bob starting at 2:00 PM.
-Question:
-``` -->
 
 You can also visualize and debug the graph using LangSmith Studio by running the following command:
 
@@ -80,4 +69,3 @@ This will start the LangGraph Studio, where you can interact with the agents and
 *   [x] Add a conditional edge for execute query to jump back to generate query on failure.
 *   [ ] Implement weather checking functionality.
 *   [ ] Implement conflict checking and meeting time suggestions.
-*   [ ] Add a router to determine if a failed query should go to generate query or gather requirements node.
