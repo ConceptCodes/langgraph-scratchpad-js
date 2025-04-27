@@ -19,9 +19,11 @@ const outputSchema = z.object({
 export const respondToDiscussionNode = async (
   state: typeof DiscussionStateAnnotation.State
 ) => {
-  const { members, chatLog } = state;
+  const { members, publicChat, privateChat, phase } = state;
+  const chatLog = phase === "day" ? publicChat : privateChat;
+
   const lastMessage = chatLog.at(-1)?.content as string;
-  const lastSpeakerName = lastMessage.split(":")[0];
+  const lastSpeakerName = lastMessage?.split(":")[0];
 
   const availableResponders = members.filter((m) => m.name !== lastSpeakerName);
   const responder =

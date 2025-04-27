@@ -10,8 +10,10 @@ export const resolveVotesNode = async (
     (player) => votes[player] === maxVotes
   );
 
+  console.log("Target player for elimination:", targetPlayer);
+
   return {
-    eliminatedPlayers: [targetPlayer],
+    target: targetPlayer,
     votes: {},
   };
 };

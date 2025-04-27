@@ -3,22 +3,22 @@ import type { AgentStateAnnotation } from "../agent/state";
 export const startDiscussionNode = async (
   state: typeof AgentStateAnnotation.State
 ) => {
-  const { players, phase, publicChat, mafiaChat } = state;
-  const mafia = players.filter(
-    (player) => player.alive && player.role === "mafia"
+  const { players, phase, eliminatedPlayers } = state;
+
+  const stillAlivePlayers = players.filter(
+    (player) => !eliminatedPlayers.includes(player.name)
   );
-  const villagers = players.filter((player) => player.alive);
+
+  const mafia = stillAlivePlayers.filter((player) => player.role === "mafia");
 
   switch (phase) {
     case "day":
       return {
-        members: villagers,
-        chatLog: publicChat,
+        members: stillAlivePlayers,
       };
     case "night":
       return {
         members: mafia,
-        chatLog: mafiaChat,
       };
   }
 };

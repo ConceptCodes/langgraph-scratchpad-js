@@ -30,6 +30,22 @@ export const SharedStateAnnotation = Annotation.Root({
     reducer: (a, b) => b ?? a,
     default: () => "day",
   }),
+  round: Annotation<number>({
+    reducer: (a, b) => b ?? a,
+    default: () => 1,
+  }),
+  publicChat: Annotation<BaseMessage[]>({
+    reducer: (a, b) => a.concat(b),
+    default: () => [],
+  }),
+  privateChat: Annotation<BaseMessage[]>({
+    reducer: (a, b) => a.concat(b),
+    default: () => [],
+  }),
+  eliminatedPlayers: Annotation<string[]>({
+    reducer: (a, b) => a.concat(b),
+    default: () => [],
+  }),
 });
 
 export const DiscussionStateAnnotation = Annotation.Root({
@@ -43,46 +59,32 @@ export const DiscussionStateAnnotation = Annotation.Root({
     reducer: (a, b) => b ?? a,
     default: () => [],
   }),
-  chatLog: Annotation<BaseMessage[]>({
+  protectedPlayers: Annotation<string[]>({
     reducer: (a, b) => a.concat(b),
+    default: () => [],
+  }),
+  investigatedPlayers: Annotation<{ name: string; role: string }[]>({
+    reducer: (a, b) => b ?? a,
     default: () => [],
   }),
 });
 
 export const NightStateAnnotation = Annotation.Root({
-  eliminatedPlayers: Annotation<string[]>({
-    reducer: (a, b) => a.concat(b),
-    default: () => [],
-  }),
-  protectedPlayers: Annotation<string[]>({
-    reducer: (a, b) => a.concat(b),
-    default: () => [],
-  }),
-  mafiaChat: Annotation<BaseMessage[]>({
-    reducer: (a, b) => a.concat(b),
-    default: () => [],
-  }),
-
   ...DiscussionStateAnnotation.spec,
+
+  target: Annotation<string | null>({
+    reducer: (a, b) => b ?? a,
+    default: () => null,
+  }),
 });
 
 export const DayStateAnnotation = Annotation.Root({
-  publicChat: Annotation<BaseMessage[]>({
-    reducer: (a, b) => a.concat(b),
-    default: () => [],
-  }),
-
   ...DiscussionStateAnnotation.spec,
+  ...OutputStateAnnotation.spec,
 });
 
 export const AgentStateAnnotation = Annotation.Root({
   ...InputStateAnnotation.spec,
-  ...OutputStateAnnotation.spec,
   ...NightStateAnnotation.spec,
   ...DayStateAnnotation.spec,
-
-  round: Annotation<number>({
-    reducer: (a, b) => b ?? a,
-    default: () => 1,
-  }),
 });

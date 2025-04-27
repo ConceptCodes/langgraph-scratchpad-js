@@ -14,14 +14,14 @@ export const initPlayersNode = async (
   const base: Player[] = [
     {
       role: "detective",
-      name: faker.person.fullName(),
+      name: faker.person.firstName(),
       bio: null,
       alive: true,
     },
     {
       role: "doctor",
       alive: true,
-      name: faker.person.fullName(),
+      name: faker.person.firstName(),
       bio: null,
     },
   ];
@@ -32,12 +32,20 @@ export const initPlayersNode = async (
       ({
         role: i < mafiaCount ? "mafia" : "villager",
         alive: true,
-        name: faker.person.fullName(),
+        name: faker.person.firstName(),
         bio: null,
       } as Player)
   );
 
   const allPlayers = base.concat(dynamicPlayers);
+
+  const uniqueNames = new Set();
+  allPlayers.forEach((player) => {
+    while (uniqueNames.has(player.name)) {
+      player.name = faker.person.firstName();
+    }
+    uniqueNames.add(player.name);
+  });
 
   return allPlayers.map((player) => {
     return new Send(Nodes.INIT_PLAYERS, { players: [player] });
