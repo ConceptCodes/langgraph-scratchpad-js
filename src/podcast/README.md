@@ -6,8 +6,7 @@ This module implements a LangGraph agent designed to automatically generate a co
 
 The agent utilizes LangGraph to define and execute a multi-step workflow. It involves several nodes for specific tasks like insight extraction, outlining, drafting, reviewing, and audio generation. Parallel execution is employed for building individual podcast sections concurrently.
 
-<!-- ![Podcast Agent Architecture](/src/podcast/assets/graph.png) -->
-*(Diagram to be added)*
+![Podcast Agent Architecture](/src/podcast/assets/graph.png)
 
 ## Functionality
 

@@ -7,7 +7,7 @@ Examples are provided in the `assets` directory.
 
 ## Architecture
 
-![Research Agent Architecture](/assets/graph.png)
+![Research Agent Architecture](/src/research/assets/graph.png)
 
 ## Functionality
 
