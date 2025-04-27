@@ -35,4 +35,8 @@ export const AgentStateAnnotation = Annotation.Root({
     reducer: (a, b) => ({ ...a, ...b }),
     default: () => ({}),
   }),
+  confirmation: Annotation<boolean>({
+    reducer: (a, b) => b ?? a,
+    default: () => false,
+  }),
 });

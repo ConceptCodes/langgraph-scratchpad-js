@@ -215,6 +215,7 @@ Try to explain to the user in simple english what the sql query is attempting to
 - The confirmation message should be clear and concise.
 - Avoid technical jargon or SQL terms.
 - Ensure the message is easy to understand for a non-technical user.
+- Remember you are asking the user to confirm a calendar modification.
 </Constraint>
 `;
 

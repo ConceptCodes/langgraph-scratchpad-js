@@ -28,7 +28,14 @@ const confirmationOutputSchema = z.object({
 export const confirmationNode = async (
   state: typeof AgentStateAnnotation.State
 ) => {
-  const { messages, query } = state;
+  const { messages, query, confirmation } = state;
+
+  if (confirmation) {
+    return new Command({
+      goto: Nodes.EXECUTE_QUERY,
+    });
+  }
+
   const lastMessage = messages.at(-1)?.content as string;
 
   const structuredLLM = llm.withStructuredOutput(outputSchema);
@@ -66,5 +73,8 @@ export const confirmationNode = async (
 
   return new Command({
     goto: Nodes.EXECUTE_QUERY,
+    update: {
+      confirmation: true,
+    },
   });
 };
