@@ -6,11 +6,11 @@ import { graph } from "./agent/graph";
 
 const drawResearchGraph = async () => {
   const filepath = path.join(__dirname, "assets", "graph.png");
-  drawGraph(graph, filepath);
+  await drawGraph(graph, filepath);
 };
 
 const run = async () => {
-  // drawResearchGraph()
+  // await drawResearchGraph()
 
   const topic = prompt("Enter the topic of the research: ");
 

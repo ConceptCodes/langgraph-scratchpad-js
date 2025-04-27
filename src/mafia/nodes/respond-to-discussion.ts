@@ -1,9 +1,13 @@
 import { z } from "zod";
-import { AIMessage, HumanMessage } from "@langchain/core/messages";
+import {
+  AIMessage,
+  HumanMessage,
+  SystemMessage,
+} from "@langchain/core/messages";
 
 import { llm } from "../helpers/llm";
 import type { DiscussionStateAnnotation } from "../agent/state";
-import { respondToDiscussionPrompt } from "../agent/prompts";
+import { respondToDiscussionPrompt, systemPrompt } from "../agent/prompts";
 
 const outputSchema = z.object({
   stance: z
@@ -32,10 +36,11 @@ export const respondToDiscussionNode = async (
     responder?.name!,
     responder?.bio!,
     responder?.role!,
-    chatLog.map((message) => message.content as string)
+    chatLog.map((message) => message?.content as string)
   );
 
   const { stance, reason } = await structuredLLM.invoke([
+    new SystemMessage(systemPrompt),
     new HumanMessage(prompt),
   ]);
 

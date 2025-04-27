@@ -8,11 +8,10 @@ import { formatDraft } from "./helpers/utils";
 const drawPodcastGraph = async () => {
   const filepath = path.join(__dirname, "assets", "graph.png");
   await drawGraph(graph, filepath);
-  console.log("Graph image saved to:", filepath);
 };
 
 const run = async () => {
-  // await drawPodcastGraph(); // Uncomment to draw graph on run
+  // await drawPodcastGraph();
 
   const filePath = process.argv[2];
   if (!filePath) {

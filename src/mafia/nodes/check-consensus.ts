@@ -1,25 +1,41 @@
 import { Command } from "@langchain/langgraph";
-import type { DiscussionStateAnnotation } from "../agent/state";
+
 import { Nodes } from "../helpers/constants";
+import type { DiscussionStateAnnotation } from "../agent/state";
 
 export const checkConsensusNode = async (
   state: typeof DiscussionStateAnnotation.State
 ) => {
-  const { votes } = state;
-  let consensusReached = false;
+  const { votes, members } = state;
 
-  const voteCounts = Object.entries(votes).reduce((acc, [player, count]) => {
-    acc[player] = (acc[player] || 0) + count;
-    return acc;
-  }, {} as Record<string, number>);
+  console.log("[checkConsensusNode] votes:", votes);
+  console.log("[checkConsensusNode] members:", members);
 
-  const maxVotes = Math.max(...Object.values(voteCounts));
+  const totalVotes = Object.values(votes).reduce(
+    (acc, count) => acc + count,
+    0
+  );
+  const totalPlayers = members.length;
+  const allPlayersVoted = totalVotes === totalPlayers;
 
-  const playersWithMaxVotes = Object.entries(voteCounts)
-    .filter(([_, count]) => count === maxVotes)
-    .map(([player]) => player);
+  console.log("[checkConsensusNode] totalVotes:", totalVotes);
+  console.log("[checkConsensusNode] totalPlayers:", totalPlayers);
+  console.log("[checkConsensusNode] allPlayersVoted:", allPlayersVoted);
 
-  if (consensusReached) {
+  const voteCounts = Object.values(votes);
+  const maxVotes = Math.max(...voteCounts);
+  const maxVoteCount = voteCounts.filter((vote) => vote === maxVotes).length;
+  const consensusThreshold = Math.ceil(totalPlayers / 2);
+  const consensusReached = maxVoteCount >= consensusThreshold;
+
+  console.log("[checkConsensusNode] voteCounts:", voteCounts);
+  console.log("[checkConsensusNode] maxVotes:", maxVotes);
+  console.log("[checkConsensusNode] maxVoteCount:", maxVoteCount);
+  console.log("[checkConsensusNode] consensusThreshold:", consensusThreshold);
+  console.log("[checkConsensusNode] consensusReached:", consensusReached);
+
+  if (consensusReached && allPlayersVoted) {
+    console.log("[checkConsensusNode] Consensus reached. Moving to RESOLVE_VOTE.");
     return new Command({
       goto: Nodes.RESOLVE_VOTE,
       update: {
@@ -27,6 +43,7 @@ export const checkConsensusNode = async (
       },
     });
   }
+  console.log("[checkConsensusNode] Consensus not reached. Returning to ADD_TO_DISCUSSION.");
   return new Command({
     goto: Nodes.ADD_TO_DISCUSSION,
   });

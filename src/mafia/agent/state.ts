@@ -39,7 +39,6 @@ export const DiscussionStateAnnotation = Annotation.Root({
     reducer: (a, b) => b ?? a,
     default: () => false,
   }),
-
   members: Annotation<Player[]>({
     reducer: (a, b) => b ?? a,
     default: () => [],

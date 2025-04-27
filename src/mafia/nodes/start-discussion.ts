@@ -11,13 +11,11 @@ export const startDiscussionNode = async (
 
   switch (phase) {
     case "day":
-      console.log("Starting discussion", mafia);
       return {
         members: villagers,
         chatLog: publicChat,
       };
     case "night":
-      console.log("Starting discussion", mafia);
       return {
         members: mafia,
         chatLog: mafiaChat,

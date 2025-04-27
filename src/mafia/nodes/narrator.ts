@@ -27,6 +27,7 @@ export const narratorNode = async (
           goto: Nodes.NIGHT_PHASE,
           update: {
             publicChat: [new AIMessage(message)],
+            phase: "night",
           },
         });
       }
@@ -40,12 +41,16 @@ export const narratorNode = async (
         goto: Nodes.DAY_PHASE,
         update: {
           publicChat: [new AIMessage(message)],
+          phase: "day",
         },
       });
     }
     case "night": {
       return new Command({
         goto: Nodes.DAY_PHASE,
+        update: {
+          phase: "day",
+        },
       });
     }
   }
