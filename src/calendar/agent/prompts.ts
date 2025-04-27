@@ -5,19 +5,18 @@ const schema = await getAllTableSchemas();
 
 export const systemMessagePrompt = `You are **Calendar‑GPT**, an assistant that schedules, updates, and reads events with as few questions as possible.
 
+Current date: ${new Date().toISOString().slice(0, 10)}
+
+<DatabaseSchemas>
+${JSON.stringify(schema, null, 2)}
+</DatabaseSchemas>
+
 General Principles
 • Parse natural‑language dates, times, and durations on your own.  
 • Infer the event *title* from the action/object clause (“walk my dog”, “read”).  
 • Only ask the user something if you cannot *unambiguously* infer it.
 
 𐄂 NEVER hallucinate columns or tables.  
-✓ ALWAYS respond with **JSON only** – no back‑ticks, no prose – using the schemas below.
-
-Current date: ${new Date().toISOString().slice(0, 10)}
-
-<DatabaseSchemas>
-${JSON.stringify(schema, null, 2)}
-</DatabaseSchemas>
 `;
 
 export const gatherRequirementsPrompt = (
@@ -136,17 +135,24 @@ ${JSON.stringify(queryResults)}
 
 export const generalQuestionPrompt = (
   messages: string[]
-) => `Answer the user's question based on the past conversation.
-
-<Constraint>
-- if the <UserRequest> is not related to the <ChatHistory>, say "Sorry, I can only help you with managing your calendar."
-</Constraint>
+) => `Please review the conversation history and respond to the user's latest request below.
 
 <ChatHistory>
 ${JSON.stringify(messages, null, 2)}
 </ChatHistory>
 
-<UserRequest>${messages[messages.length - 1]}</UserRequest>
+<UserRequest>
+${messages[messages.length - 1]}
+</UserRequest>
+
+<Instructions>
+- If the <UserRequest> is related to managing calendar events or clarifies previous parts of the <ChatHistory>, provide a helpful and concise answer based on the conversation.
+- If the <UserRequest> is unrelated to calendar management, politely explain that your focus is on calendar tasks. You could say something like: "My apologies, I can only assist with tasks related to managing your calendar, such as scheduling, updating, or retrieving events. How can I help you with your calendar today?"
+- Respond in a natural, conversational tone suitable for an assistant.
+- you are allowed to greet the user and ask them how you can help them.
+</Instructions>
+
+Assistant Response:
 `;
 
 export const routerPrompt = (
@@ -204,4 +210,15 @@ Try to explain to the user in simple english what the sql query is attempting to
 <Query>${sqlQuery}</Query>
 
 <UserRequest>${userRequest}</UserRequest>
+
+<Constraint>
+- The confirmation message should be clear and concise.
+- Avoid technical jargon or SQL terms.
+- Ensure the message is easy to understand for a non-technical user.
+</Constraint>
+`;
+
+export const userConfirmationSystemPrompt = (confirmationMessage: string) => `
+You are a smart confirmation checker for a calendar assistant. Your job is to decide whether the user confirmed the action based on the confirmation message.
+<ConfirmationMessage>${confirmationMessage}</ConfirmationMessage>
 `;

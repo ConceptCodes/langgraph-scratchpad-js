@@ -12,7 +12,7 @@ const outputSchema = z.object({
 export const doctorNode = async (
   state: typeof NightStateAnnotation.State
 ): Promise<typeof NightStateAnnotation.Update> => {
-  const { players, publicChat, eliminatedPlayers } = state;
+  const { players, publicChat, eliminatedPlayers, protectedPlayers } = state;
 
   const doctor = players.find((player) => player.role === "doctor");
   const playerNames = players
@@ -23,7 +23,8 @@ export const doctorNode = async (
     doctor?.name!,
     doctor?.bio!,
     publicChat.map((message) => message?.content as string),
-    playerNames
+    playerNames,
+    protectedPlayers
   );
 
   const structuredLLM = llm.withStructuredOutput(outputSchema);

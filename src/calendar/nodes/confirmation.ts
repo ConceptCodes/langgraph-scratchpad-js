@@ -8,13 +8,21 @@ import { Command, END, interrupt } from "@langchain/langgraph";
 
 import type { AgentStateAnnotation } from "../agent/state";
 import { llm } from "../helpers/llm";
-import { systemMessagePrompt, userConfirmationPrompt } from "../agent/prompts";
+import {
+  systemMessagePrompt,
+  userConfirmationPrompt,
+  userConfirmationSystemPrompt,
+} from "../agent/prompts";
 import { Nodes } from "../helpers/constants";
 
 const outputSchema = z.object({
   confirmationMessage: z
     .string()
     .describe("The generated confirmation message based on the user request"),
+});
+
+const confirmationOutputSchema = z.object({
+  confirmed: z.boolean().describe("Whether the user confirmed the action"),
 });
 
 export const confirmationNode = async (
@@ -31,22 +39,32 @@ export const confirmationNode = async (
     new HumanMessage({ content: prompt }),
   ]);
 
-  const confirmation: string = interrupt(confirmationMessage);
+  const response: string = interrupt(confirmationMessage);
 
-  if (confirmation.toLowerCase() !== "yes") {
+  const confirmationStructuredLLM = llm.withStructuredOutput(
+    confirmationOutputSchema
+  );
+  const { confirmed } = await confirmationStructuredLLM.invoke([
+    new SystemMessage({
+      content: userConfirmationSystemPrompt(confirmationMessage),
+    }),
+    new HumanMessage({ content: `here is the users response: ${response}` }),
+  ]);
+
+  if (!confirmed) {
     return new Command({
       goto: END,
       update: {
         messages: [
           new AIMessage({
-            content: "Calendar modification cancelled.",
+            content: "Calendar modification cancelled by user.",
           }),
         ],
       },
     });
-  } else {
-    return new Command({
-      goto: Nodes.EXECUTE_QUERY,
-    });
   }
+
+  return new Command({
+    goto: Nodes.EXECUTE_QUERY,
+  });
 };

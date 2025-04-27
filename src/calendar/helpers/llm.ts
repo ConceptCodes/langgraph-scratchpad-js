@@ -1,7 +1,7 @@
 import { ChatOllama } from "@langchain/ollama";
 import { ChatOpenAI } from "@langchain/openai";
 
-const model = "gemma3:4b";
+const model = "mistral";
 
 const llm = new ChatOllama({
   model,
