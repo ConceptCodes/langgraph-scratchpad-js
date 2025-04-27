@@ -8,7 +8,9 @@
     "calendar": "./src/calendar/agent/graph.ts:graph",
     "research": "./src/research/agent/graph.ts:graph",
     "podcast": "./src/podcast/agent/graph.ts:graph",
-    "react": "./src/react/agent/graph.ts:graph"
+    "react": "./src/react/agent/graph.ts:graph",
+    "planner": "./src/planner/agent/graph.ts:graph",
+    "mafia": "./src/mafia/agent/graph.ts:graph"
   },
   "env": ".env"
 }
