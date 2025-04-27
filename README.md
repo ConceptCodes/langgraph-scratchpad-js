@@ -6,7 +6,8 @@ This repository serves as a scratchpad for experimenting with LangGraph. It cont
 ## Prerequisites
 - [Bun](https://bun.sh) - A fast all-in-one JavaScript runtime.
 - [Ollama](https://ollama.com/) - A local LLM server. You can install it by following the instructions on their website.
-   - gemma3:4b or gemma3:12b
+   - `gemma3:4b` or `gemma3:12b`
+   - if you are using another model, make sure to update the respective modules `helpers/llm.ts`
 - [OpenAI Api Key](https://platform.openai.com/docs/api-reference/authentication) - You can get your API key from the OpenAI website. 
 - [Tavily Api Key](https://tavily.com/) - You can get your API key from the Tavily website. 
 
