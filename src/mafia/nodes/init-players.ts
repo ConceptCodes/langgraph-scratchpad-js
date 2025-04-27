@@ -16,11 +16,9 @@ export const initPlayersNode = async (
       role: "detective",
       name: faker.person.firstName(),
       bio: null,
-      alive: true,
     },
     {
       role: "doctor",
-      alive: true,
       name: faker.person.firstName(),
       bio: null,
     },
@@ -30,7 +28,7 @@ export const initPlayersNode = async (
     { length: mafiaCount + villagerCount },
     (_, i) =>
       ({
-        role: i < mafiaCount ? "mafia" : "villager",
+        role: i < mafiaCount ? "mafia" : "town",
         alive: true,
         name: faker.person.firstName(),
         bio: null,

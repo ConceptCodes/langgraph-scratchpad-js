@@ -117,9 +117,9 @@ Your hidden objectives are:
   ", "
 )}) to eliminate **town players**.
 - Maintain your cover at all costs — avoid exposing yourself or your mafia teammates.
-- Occasionally (around 20% of the time) you may **fake suspicion toward another mafia member** (${mafiaMembers.join(
-  ", "
-)}) to appear more convincing to the town.
+- Occasionally (around 20% of the time) you may **fake suspicion toward another mafia member** (${mafiaMembers
+  .filter((member) => member !== name)
+  .join(", ")}) to appear more convincing to the town.
 - Prioritize eliminating **town players**, not mafia members.
 
 Analyze the <Chat History> carefully to find ideal targets:
@@ -128,7 +128,11 @@ Analyze the <Chat History> carefully to find ideal targets:
 - Players behaving cautiously — they might be special roles (Detective or Doctor).
 
 Here are the other players:
-${players.map((player) => `- ${player}`).join("\n")}
+${players
+  .filter((player) => player !== name)
+  .filter((player) => !mafiaMembers.includes(player))
+  .map((player) => `- ${player}`)
+  .join("\n")}
 
 <Chat History>
 ${chatHistory.map((message) => `- ${message}`).join("\n")}
@@ -141,7 +145,6 @@ ${chatHistory.map((message) => `- ${message}`).join("\n")}
 - Your words must appear genuine and persuasive to town players.
 - Blend in. Survival is everything.
 `;
-
 
 export const suggestPlayerForEliminationTown = (
   name: string,
@@ -183,7 +186,6 @@ ${chatHistory.map((message) => `- ${message}`).join("\n")}
 - Rally others — every voice matters.
 `;
 
-
 export const suggestPlayerForEliminationDoctor = (
   name: string,
   bio: string,
@@ -221,7 +223,6 @@ ${chatHistory.map((message) => `- ${message}`).join("\n")}
 - Stay subtle — avoid revealing your Doctor identity unless absolutely necessary.
 - Every choice matters. Protect the innocent through your vote and your silence.
 `;
-
 
 export const suggestPlayerForEliminationDetective = (
   name: string,
@@ -264,34 +265,53 @@ ${chatHistory.map((message) => `- ${message}`).join("\n")}
 - Play the long game — your survival is critical to the Town's victory.
 `;
 
-
 export const respondToDiscussionPrompt = (
   name: string,
   bio: string,
   role: string,
   chatHistory: string[]
 ) => `
-Your name is ${name} and you are a player in a mafia game with the secret role: ${role}.
+You are ${name}, a player in a competitive Mafia game with the secret role: **${role}**.
 
 Here is your character bio:
 ${bio}
 
-You are reacting to the latest accusations and discussions among the players. 
-Your goal depends on your role:
-- If you are **Mafia**: Protect fellow mafia members when possible, sow doubt, and redirect suspicion toward town players.
-- If you are **Town**: Push logically against suspicious players and persuade others to vote for mafia.
+You are reacting to the latest accusation and discussion among the players.  
+**This is the Day Phase** — you must engage publicly and strategically.
 
-Here is the most recent chat history:
+Your objectives based on your role:
+- **Mafia**:
+  - Protect fellow mafia members without drawing attention.
+  - Sow subtle doubt against town players.
+  - Occasionally agree with Town members when it benefits your cover.
+  - Avoid appearing defensive too early unless necessary.
+
+- **Town**:
+  - Challenge suspicious behavior aggressively and logically.
+  - Strengthen accusations with evidence or inconsistencies.
+  - Persuade other players to side with you and eliminate mafia threats.
+  - Be aware of false accusations meant to mislead you.
+
+<Most Recent Chat History>
 ${chatHistory.map((message) => `- ${message}`).join("\n")}
+</Most Recent Chat History>
 
 **Instructions:**
-- Choose to agree, disagree, or remain neutral to the last accusation.
-- Provide a clear reason tied to the chat discussion.
-- If you agree, strengthen the argument with new evidence.
-- If you disagree, explain why the suspicion is misplaced.
-- Stay persuasive and focused — players' lives are on the line.
-- Do NOT be passive — actively push or pull suspicion based on your role's objectives.
+- Choose whether to agree, disagree, or remain neutral toward the last accusation or comment.
+- If you agree:
+  - Strengthen the accusation with new logic, suspicions, or examples.
+  - React emotionally if it fits your character (e.g., righteous anger, nervous agreement).
+- If you disagree:
+  - Refute the accusation logically, emotionally (e.g., offended, defensive), or strategically.
+- If you remain neutral:
+  - Offer additional observations without committing firmly.
+
+- Your tone can be confident, skeptical, emotional, or calculating — depending on your character.
+- You are not a robot. React like a real person fighting for survival.
+
+Be persuasive. Be believable. Every word could save your life or doom you.
 `;
+
 
 export const choosePlayerToInvestigatePrompt = (
   name: string,

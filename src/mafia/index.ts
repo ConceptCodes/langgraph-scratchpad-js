@@ -10,7 +10,9 @@ const drawMafiaGraph = async () => {
   console.log("Graph image saved to:", filepath);
 };
 
-const config = { configurable: { thread_id: getRandomThreadId() } };
+const config = {
+  configurable: { thread_id: getRandomThreadId() },
+};
 
 const run = async () => {
   // await drawMafiaGraph(); // Uncomment to draw graph on run
@@ -30,17 +32,14 @@ const run = async () => {
         { mafiaCount: parseInt(input) },
         {
           ...config,
-          streamMode: "values", // Or "updates"
+          recursionLimit: 100,
+          streamMode: "updates", // Or "updates"
         }
       );
 
       for await (const chunk of await result) {
         console.log("--- Chunk ---");
         console.log(JSON.stringify(chunk, null, 2));
-        // Example: Accessing a specific node's output
-        // if (chunk.someNodeName) {
-        //   prettifyOutput(JSON.stringify(chunk.someNodeName), "blue");
-        // }
       }
       console.log("--- Stream End ---");
     } catch (error) {
