@@ -13,7 +13,7 @@ export const itemSelectionNode = async (
   const { messages, queryResults } = state;
   const lastMessage = messages.at(-1);
 
-  if (!queryResults) {
+  if (queryResults.length === 0) {
     return new Command({
       goto: Nodes.CHECK_INVENTORY,
       update: {
@@ -29,5 +29,12 @@ export const itemSelectionNode = async (
   const draftOrderLLM = llm.withStructuredOutput(draftOrderSchema);
   const draft = await draftOrderLLM.invoke([new HumanMessage(prompt)]);
 
-  return { draft, queryResults: [], prev: "" };
+  return new Command({
+    goto: Nodes.REVIEW_ORDER,
+    update: {
+      draft,
+      queryResults: [],
+      prev: "",
+    },
+  });
 };

@@ -76,7 +76,6 @@ with that SQL ONLY.
 
 Guidelines
 • List the columns you need: modifier_id, name, price.
-• Use INNER JOIN
 • Ensure the query is efficient and concise.
 
 Draft order:

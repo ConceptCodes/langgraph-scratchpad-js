@@ -137,6 +137,11 @@ const seedDatabase = async () => {
         name: "Ketchup",
         priceAdjustment: 0.0,
       },
+      {
+        modifierGroup: modifierGroups[3],
+        name: "Mustard",
+        priceAdjustment: 0.0,
+      },
       { modifierGroup: modifierGroups[3], name: "Ranch", priceAdjustment: 0.5 },
       {
         modifierGroup: modifierGroups[3],

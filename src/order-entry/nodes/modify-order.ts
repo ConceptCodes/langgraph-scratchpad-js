@@ -13,27 +13,19 @@ export const modifyOrderNode = async (
   const { draft, messages, queryResults } = state;
   const lastMessage = messages.at(-1);
 
-  if (!queryResults) {
+  let prompt = checkModifierPrompt(draft, lastMessage?.content as string);
+
+  if (queryResults.length === 0) {
     return new Command({
       goto: Nodes.CHECK_INVENTORY,
       update: {
         prev: Nodes.MODIFY_ORDER,
-        messages: [
-          new HumanMessage(
-            `Look for available modifiers for the items in the current draft order. draft order: ${JSON.stringify(
-              draft,
-              null,
-              2
-            )}`
-          ),
-        ],
+        messages: [new HumanMessage(prompt)],
       },
     });
   }
 
-  // let prompt = checkModifierPrompt(draft, lastMessage?.content as string);
-
-  const prompt = modifyOrderPrompt(
+  prompt = modifyOrderPrompt(
     draft,
     lastMessage?.content as string,
     queryResults
@@ -42,9 +34,12 @@ export const modifyOrderNode = async (
   const structuredLLM = llm.withStructuredOutput(draftOrderSchema);
   const tmp = await structuredLLM.invoke([new HumanMessage(prompt)]);
 
-  return {
-    draft: tmp,
-    queryResults: [],
-    prev: "",
-  };
+  return new Command({
+    goto: Nodes.REVIEW_ORDER,
+    update: {
+      draft: tmp,
+      queryResults: [],
+      prev: "",
+    },
+  });
 };

@@ -356,47 +356,24 @@ export const getTableDefinitions = (): string => {
   let schemaString = "Database Schema:\n\n";
 
   entityMetadatas.forEach((entity: EntityMetadata) => {
-    if (entity.isJunction) {
-      return;
-    }
-
     schemaString += `Table: ${entity.tableName}\n`;
     schemaString += "Columns:\n";
 
     entity.columns.forEach((col) => {
-      const isDefinedByRelation = entity.relations.some((rel) =>
-        rel.joinColumns.some((jc) => jc.databaseName === col.databaseName)
+      schemaString += `  - ${col.databaseName} (${col.type})`;
+      if (col.isPrimary) schemaString += " [PRIMARY KEY]";
+      if (!col.isNullable) schemaString += " [NOT NULL]";
+      const fk = entity.foreignKeys.find((fk) =>
+        fk.columnNames.includes(col.databaseName)
       );
-
-      if (col.isPrimary || !isDefinedByRelation) {
-        schemaString += `  - ${col.databaseName} (${col.type})`;
-        if (col.isPrimary) schemaString += " [PRIMARY KEY]";
-        if (!col.isNullable) schemaString += " [NOT NULL]";
-        schemaString += "\n";
+      if (fk) {
+        schemaString += ` [FOREIGN KEY references ${
+          fk.referencedTablePath
+        }(${fk.referencedColumnNames.join(", ")})]`;
       }
+      schemaString += "\n";
     });
 
-    const relations = entity.relations;
-    if (relations.length > 0) {
-      schemaString += "Relationships:\n";
-      relations.forEach((rel) => {
-        const targetTable = rel.inverseEntityMetadata.tableName;
-        if (rel.isOwning) {
-          const fkColumns = rel.joinColumns
-            .map((jc) => jc.databaseName)
-            .join(", ");
-          const referencedColumns = rel.joinColumns
-            .map((jc) => jc.referencedColumn!.databaseName)
-            .join(", ");
-          schemaString += `  - (${rel.relationType}) Owns relation via ${entity.tableName}.${fkColumns} -> ${targetTable}.${referencedColumns}\n`;
-        } else {
-          const inverseProperty = rel.inverseRelation
-            ? rel.inverseRelation.propertyName
-            : "[unknown]";
-          schemaString += `  - (${rel.relationType}) Is related by ${targetTable}.${inverseProperty}\n`;
-        }
-      });
-    }
     schemaString += "\n";
   });
 

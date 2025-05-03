@@ -15,6 +15,7 @@ import { itemSelectionNode } from "../nodes/item-selection";
 import { modifyOrderNode } from "../nodes/modify-order";
 import { reviewOrderNode } from "../nodes/review-order";
 import { confirmOrderNode } from "../nodes/confirm-order";
+import { checkInventoryNode } from "../nodes/check-inventory";
 
 await initializeDatabase();
 
@@ -33,16 +34,21 @@ const workflow = new StateGraph(
   .addNode(Nodes.PARSE_INTENT, parseIntentNode, {
     ends: [Nodes.ITEM_SELECTION, Nodes.MODIFY_ORDER, Nodes.CONFIRM_ORDER],
   })
-  .addNode(Nodes.ITEM_SELECTION, itemSelectionNode)
+  .addNode(Nodes.ITEM_SELECTION, itemSelectionNode, {
+    ends: [Nodes.CHECK_INVENTORY, Nodes.REVIEW_ORDER],
+  })
+  .addNode(Nodes.CHECK_INVENTORY, checkInventoryNode, {
+    ends: [Nodes.ITEM_SELECTION, Nodes.MODIFY_ORDER],
+  })
   .addNode(Nodes.REVIEW_ORDER, reviewOrderNode)
-  .addNode(Nodes.MODIFY_ORDER, modifyOrderNode)
+  .addNode(Nodes.MODIFY_ORDER, modifyOrderNode, {
+    ends: [Nodes.CHECK_INVENTORY, Nodes.REVIEW_ORDER],
+  })
   .addNode(Nodes.CONFIRM_ORDER, confirmOrderNode);
 
 workflow.addEdge(START, Nodes.WELCOME_MESSAGE);
 workflow.addEdge(Nodes.WELCOME_MESSAGE, Nodes.AUDIO_OUTPUT);
 workflow.addEdge(Nodes.AUDIO_INPUT, Nodes.PARSE_INTENT);
-workflow.addEdge(Nodes.ITEM_SELECTION, Nodes.REVIEW_ORDER);
-workflow.addEdge(Nodes.MODIFY_ORDER, Nodes.REVIEW_ORDER);
 workflow.addEdge(Nodes.CONFIRM_ORDER, Nodes.AUDIO_OUTPUT);
 
 export const graph = workflow.compile({

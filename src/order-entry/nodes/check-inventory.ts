@@ -17,11 +17,9 @@ export const checkInventoryNode = async (
   const systemMessage = checkInventoryPrompt(tableDefinition);
   const structuredLLM = llm.withStructuredOutput(querySchema);
 
-  const prompt = `Here is the user message: "${lastMessage?.content}".`;
-
   const { query, params } = await structuredLLM.invoke([
     new SystemMessage(systemMessage),
-    new HumanMessage(prompt),
+    new HumanMessage(lastMessage?.text!),
   ]);
 
   const result = await executeQuery(query, params);
