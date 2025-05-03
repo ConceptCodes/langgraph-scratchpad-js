@@ -43,3 +43,5 @@ This will execute the specified agent and display its output in the terminal.
 [Research Agent](src/research/README.md) - A research agent that can help you find information on a specific topic. It can search for articles, summarize them, and provide you with a concise report.
 
 [Podcast Agent](src/podcast/README.md) - A podcast agent that can generate a entire podcast episode based on given source material. 
+
+[Order Entry Agent](src/order-entry/README.md) - An order entry agent that can help you place a fast food order. It can take your order, suggest items, and provide you with a summary of your order.
