@@ -1,44 +1,50 @@
-import { z } from "zod";
 import type { AgentStateAnnotation } from "../agent/state";
-import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { HumanMessage } from "@langchain/core/messages";
+import { Command } from "@langchain/langgraph";
 
-import { draftOrderSchema, querySchema } from "../helpers/types";
-import {
-  checkModifierPrompt,
-  itemSelectionSystemPrompt,
-  modifyOrderPrompt,
-} from "../agent/prompts";
+import { draftOrderSchema } from "../helpers/types";
 import { llm } from "../helpers/llm";
-import { executeQuery, getTableDefinitions } from "../helpers/db";
+import { Nodes } from "../helpers/constants";
+import { checkModifierPrompt, modifyOrderPrompt } from "../agent/prompts";
 
 export const modifyOrderNode = async (
   state: typeof AgentStateAnnotation.State
 ) => {
-  const { draft, messages } = state;
+  const { draft, messages, queryResults } = state;
   const lastMessage = messages.at(-1);
 
-  const tableDefinition = getTableDefinitions();
-  let prompt = checkModifierPrompt(draft, lastMessage?.content as string);
-  const structuredLLM = llm.withStructuredOutput(querySchema);
+  if (!queryResults) {
+    return new Command({
+      goto: Nodes.CHECK_INVENTORY,
+      update: {
+        prev: Nodes.MODIFY_ORDER,
+        messages: [
+          new HumanMessage(
+            `Look for available modifiers for the items in the current draft order. draft order: ${JSON.stringify(
+              draft,
+              null,
+              2
+            )}`
+          ),
+        ],
+      },
+    });
+  }
 
-  const systemMessage = itemSelectionSystemPrompt(tableDefinition);
-  const { query, params } = await structuredLLM.invoke([
-    new SystemMessage(systemMessage),
-    new HumanMessage(prompt),
-  ]);
+  // let prompt = checkModifierPrompt(draft, lastMessage?.content as string);
 
-  const queryResult = await executeQuery(query, params);
-
-  prompt = modifyOrderPrompt(
+  const prompt = modifyOrderPrompt(
     draft,
     lastMessage?.content as string,
-    queryResult
+    queryResults
   );
 
-  const modifierStructuredLLM = llm.withStructuredOutput(draftOrderSchema);
-  const tmp = await modifierStructuredLLM.invoke([new HumanMessage(prompt)]);
+  const structuredLLM = llm.withStructuredOutput(draftOrderSchema);
+  const tmp = await structuredLLM.invoke([new HumanMessage(prompt)]);
 
   return {
     draft: tmp,
+    queryResults: [],
+    prev: "",
   };
 };

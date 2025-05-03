@@ -38,4 +38,18 @@ export const AgentStateAnnotation = Annotation.Root({
     reducer: (a, b) => a.concat(b),
     default: () => [],
   }),
+
+  prev: Annotation<string>({
+    reducer: (a, b) => b ?? a,
+    default: () => "",
+  }),
+
+  queryResults: Annotation<any[]>({
+    reducer: (a, b) => b ?? a,
+    default: () => [],
+  }),
+  completed: Annotation<boolean>({
+    reducer: (a, b) => b ?? a,
+    default: () => false,
+  }),
 });

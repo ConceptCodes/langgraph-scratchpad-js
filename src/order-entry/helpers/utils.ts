@@ -70,11 +70,10 @@ export const playAudio = async (audioBuffer: Buffer): Promise<void> => {
 };
 
 export const listenAndTranscribe = async (
-  durationMs: number = 5000,
-  sampleRate: number = 16000,
-  language: string = "en"
+  language: string = "en",
+  sampleRate: number = 16000
 ): Promise<string> => {
-  console.log(`Starting recording for ${durationMs / 1000} seconds...`);
+  console.log(`Starting recording...`);
 
   const tempDir = os.tmpdir();
   const tempFilePath = path.join(tempDir, `recording_${uuidv4()}.wav`);
@@ -85,13 +84,12 @@ export const listenAndTranscribe = async (
     channels: 1, // Mono audio
     audioType: "wav",
     threshold: 0.5, // Silence threshold (adjust as needed)
-    endOnSilence: false, // Keep recording for the full duration
+    endOnSilence: true, // Stop recording on silence
     // device: null, // Use default recording device
     recorder: "rec", // Specify recorder program (rec for SoX on macOS/Linux)
     verbose: false,
   });
 
-  let recordingTimeout: NodeJS.Timeout;
   let transcription = "";
   let hasError = false;
 
@@ -102,7 +100,6 @@ export const listenAndTranscribe = async (
         console.error("Recording error:", err);
         hasError = true;
         fileStream.end();
-        clearTimeout(recordingTimeout);
         reject(new Error(`Recording failed: ${err.message}`));
       })
       .pipe(fileStream)
@@ -115,14 +112,8 @@ export const listenAndTranscribe = async (
       .on("error", (err) => {
         console.error("File stream error:", err);
         hasError = true;
-        clearTimeout(recordingTimeout);
         reject(new Error(`Failed to write audio file: ${err.message}`));
       });
-
-    recordingTimeout = setTimeout(() => {
-      console.log("Stopping recording...");
-      recording.stop();
-    }, durationMs);
   });
 
   try {

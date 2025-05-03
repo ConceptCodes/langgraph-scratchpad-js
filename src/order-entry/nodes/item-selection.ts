@@ -1,37 +1,33 @@
-import { z } from "zod";
-import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { HumanMessage } from "@langchain/core/messages";
 
 import { llm } from "../helpers/llm";
 import type { AgentStateAnnotation } from "../agent/state";
-import { getTableDefinitions } from "../helpers/db";
-import {
-  convertSqlResultToDraftOrderPrompt,
-  itemSelectionSystemPrompt,
-} from "../agent/prompts";
-import { executeQuery } from "../helpers/db";
-import { draftOrderSchema, querySchema } from "../helpers/types";
+import { convertSqlResultToDraftOrderPrompt } from "../agent/prompts";
+import { draftOrderSchema } from "../helpers/types";
+import { Command } from "@langchain/langgraph";
+import { Nodes } from "../helpers/constants";
 
 export const itemSelectionNode = async (
   state: typeof AgentStateAnnotation.State
 ) => {
-  const { messages } = state;
+  const { messages, queryResults } = state;
   const lastMessage = messages.at(-1);
 
-  const tableDefinition = getTableDefinitions();
-  const systemMessage = itemSelectionSystemPrompt(tableDefinition);
-  const structuredLLM = llm.withStructuredOutput(querySchema);
-  let prompt = `Here is the user message: "${lastMessage?.content}".`;
+  if (!queryResults) {
+    return new Command({
+      goto: Nodes.CHECK_INVENTORY,
+      update: {
+        prev: Nodes.ITEM_SELECTION,
+      },
+    });
+  }
 
-  const { query, params } = await structuredLLM.invoke([
-    new SystemMessage(systemMessage),
-    new HumanMessage(prompt),
-  ]);
-
-  const result = await executeQuery(query, params);
-  prompt = convertSqlResultToDraftOrderPrompt(result, prompt);
+  const prompt = convertSqlResultToDraftOrderPrompt(
+    queryResults,
+    lastMessage?.text!
+  );
   const draftOrderLLM = llm.withStructuredOutput(draftOrderSchema);
-
   const draft = await draftOrderLLM.invoke([new HumanMessage(prompt)]);
 
-  return { draft };
+  return { draft, queryResults: [], prev: "" };
 };

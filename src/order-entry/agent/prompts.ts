@@ -19,7 +19,7 @@ User says:
 "${message}"
 `;
 
-export const itemSelectionSystemPrompt = (tableDefinition: string) => `
+export const checkInventoryPrompt = (tableDefinition: string) => `
 You are “SQL‑Picker”.  Generate ONE SQL statement (SQLite dialect) that
 retrieves menu items the user asked for.  Respond with that SQL ONLY.
 
@@ -102,4 +102,18 @@ ${JSON.stringify(modifiers, null, 2)}
 
 User request: ${userRequest}
 Modify the draft order accordingly.
+`;
+
+export const confirmationPrompt = (
+  draft: DraftOrder,
+  businessName: string | undefined
+) => `
+You are “Sign-Off Builder”.  Generate a friendly sign-off message for the user
+based on the draft order. Include a summary of the order and thank the user
+for their time. Conclude with a polite farewell.
+
+Business name: ${businessName ?? "Demo Store"}
+
+Draft order:
+${JSON.stringify(draft, null, 2)}
 `;

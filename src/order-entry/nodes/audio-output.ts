@@ -8,6 +8,8 @@ import type {
 } from "../agent/state";
 import { generateSpeech, playAudio } from "../helpers/utils";
 import { llm } from "../helpers/llm";
+import { Command, END } from "@langchain/langgraph";
+import { Nodes } from "../helpers/constants";
 
 const outputSchema = z.object({
   text: z.string(),
@@ -17,7 +19,7 @@ export const audioOutputNode = async (
   state: typeof AgentStateAnnotation.State,
   config: RunnableConfig<typeof ConfigurationAnnotation.State>
 ) => {
-  const { messages } = state;
+  const { messages, completed } = state;
   const language = config.configurable?.language;
   const lastMessage = messages[messages.length - 1];
 
@@ -36,4 +38,14 @@ export const audioOutputNode = async (
 
   const audioBuffer = await generateSpeech(output);
   await playAudio(audioBuffer);
+
+  if (completed) {
+    return new Command({
+      goto: END,
+    });
+  }
+
+  return new Command({
+    goto: Nodes.AUDIO_INPUT,
+  });
 };
