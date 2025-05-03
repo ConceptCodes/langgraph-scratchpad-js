@@ -10,7 +10,7 @@ import { parseIntentPrompt } from "../agent/prompts";
 const options = [
   Nodes.ITEM_SELECTION,
   Nodes.MODIFY_ORDER,
-  Nodes.REVIEW_ORDER,
+  Nodes.CONFIRM_ORDER,
 ] as const;
 
 const outputSchema = z.object({
@@ -23,9 +23,11 @@ export const parseIntentNode = async (
   const { messages } = state;
   const lastMessage = messages.at(-1);
 
-  const prompt = parseIntentPrompt(lastMessage?.content as string, [
-    ...options,
-  ]);
+  const prompt = parseIntentPrompt(
+    lastMessage?.content as string,
+    [...options],
+    messages.map((message) => message.text)
+  );
   const structuredLLM = llm.withStructuredOutput(outputSchema);
 
   const { next } = await structuredLLM.invoke([new HumanMessage(prompt)]);

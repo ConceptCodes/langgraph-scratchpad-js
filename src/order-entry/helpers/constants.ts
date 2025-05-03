@@ -6,6 +6,7 @@ export enum Nodes {
   ITEM_SELECTION = "ITEM_SELECTION",
   REVIEW_ORDER = "REVIEW_ORDER",
   MODIFY_ORDER = "MODIFY_ORDER",
+  CONFIRM_ORDER = "CONFIRM_ORDER",
 }
 
 export const getWelcomeMessage = (businessName: string | undefined) => {

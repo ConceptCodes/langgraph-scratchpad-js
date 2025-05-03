@@ -1,4 +1,4 @@
-import { START, StateGraph, MemorySaver } from "@langchain/langgraph";
+import { START, StateGraph, MemorySaver, END } from "@langchain/langgraph";
 
 import {
   AgentStateAnnotation,
@@ -14,6 +14,7 @@ import { itemSelectionNode } from "../nodes/item-selection";
 import { modifyOrderNode } from "../nodes/modify-order";
 import { reviewOrderNode } from "../nodes/review-order";
 import { initializeDatabase } from "../helpers/db";
+import { confirmOrderNode } from "../nodes/confirm-order";
 
 await initializeDatabase();
 
@@ -28,16 +29,20 @@ const workflow = new StateGraph(
   .addNode(Nodes.AUDIO_OUTPUT, audioOutputNode)
   .addNode(Nodes.WELCOME_MESSAGE, welcomeMessageNode)
   .addNode(Nodes.PARSE_INTENT, parseIntentNode, {
-    ends: [Nodes.ITEM_SELECTION, Nodes.MODIFY_ORDER, Nodes.REVIEW_ORDER],
+    ends: [Nodes.ITEM_SELECTION, Nodes.MODIFY_ORDER, Nodes.CONFIRM_ORDER],
   })
   .addNode(Nodes.ITEM_SELECTION, itemSelectionNode)
   .addNode(Nodes.REVIEW_ORDER, reviewOrderNode)
-  .addNode(Nodes.MODIFY_ORDER, modifyOrderNode);
+  .addNode(Nodes.MODIFY_ORDER, modifyOrderNode)
+  .addNode(Nodes.CONFIRM_ORDER, confirmOrderNode);
 
 workflow.addEdge(START, Nodes.WELCOME_MESSAGE);
 workflow.addEdge(Nodes.WELCOME_MESSAGE, Nodes.AUDIO_OUTPUT);
 workflow.addEdge(Nodes.AUDIO_OUTPUT, Nodes.AUDIO_INPUT);
 workflow.addEdge(Nodes.AUDIO_INPUT, Nodes.PARSE_INTENT);
+workflow.addEdge(Nodes.ITEM_SELECTION, Nodes.REVIEW_ORDER);
+workflow.addEdge(Nodes.MODIFY_ORDER, Nodes.REVIEW_ORDER);
+workflow.addEdge(Nodes.CONFIRM_ORDER, END);
 
 export const graph = workflow.compile({
   name: "Order Entry Agent",

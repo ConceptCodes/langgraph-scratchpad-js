@@ -32,28 +32,25 @@ export class Category {
   products!: Product[];
 }
 
-@Entity()
+@Entity() 
 export class Product {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn() 
   productId!: number;
 
-  @Column("varchar", { length: 255 })
+  @Column("varchar", { length: 255 }) 
   name!: string;
 
-  @Column("text", { nullable: true })
+  @Column("text", { nullable: true }) 
   description?: string;
 
   @Column("decimal", { precision: 10, scale: 2 })
   basePrice!: number;
 
-  @Column("int")
-  categoryId!: number;
-
   @ManyToOne(() => Category, (category) => category.products, {
     onDelete: "SET NULL",
-    nullable: true,
+    nullable: true, 
   })
-  @JoinColumn()
+  @JoinColumn({ name: "category_id" })
   category?: Category;
 
   @OneToMany(() => OrderItem, (orderItem) => orderItem.product)
@@ -93,9 +90,6 @@ export class Modifier {
   @PrimaryGeneratedColumn()
   modifierId!: number;
 
-  @Column("int")
-  modifierGroupId!: number;
-
   @Column("varchar", { length: 100 })
   name!: string;
 
@@ -108,8 +102,9 @@ export class Modifier {
 
   @ManyToOne(() => ModifierGroup, (group) => group.modifiers, {
     onDelete: "CASCADE",
+    nullable: false,
   })
-  @JoinColumn()
+  @JoinColumn({ name: "modifier_group_id" })
   modifierGroup!: ModifierGroup;
 
   @OneToMany(

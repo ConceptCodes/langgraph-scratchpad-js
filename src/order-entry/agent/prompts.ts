@@ -1,14 +1,19 @@
 import type { DraftOrder } from "../helpers/types";
 
-export const parseIntentPrompt = (message: string, options: string[]) => `
+export const parseIntentPrompt = (
+  message: string,
+  options: string[],
+  chatHistory: string[]
+) => `
 You are the “Intent Guard” for an order‑entry voice assistant.
 
 TASK: decide which single action the system should take **right now**.
-Return ONLY valid JSON:
 
-  { "intent": "<one‑of: ${options.join(" | ")}>" }
+chat history:
+${chatHistory.join("\n")}
 
-Do not add any other keys, comments, or formatting.
+
+options: ${JSON.stringify(options)}
 
 User says:
 "${message}"
@@ -29,26 +34,72 @@ Schema for reference:
 ${tableDefinition}
 `;
 
-export const convertSqlResultToDraftOrderPrompt = (sqlResult: any) => `
-You are “Draft Builder”.  Convert the SQL rows below into a JSON object
-called DraftOrder.  The parser will extract the keys—it does not need type
+export const convertSqlResultToDraftOrderPrompt = (
+  sqlResult: any,
+  userRequest: string
+) => `
+You are “Draft Builder”.  Interpret the SQL rows below and infer what the
+user intended to order based on their request. Convert this into a JSON object
+called DraftOrder. The parser will extract the keys—it does not need type
 hints, just the structure.
 
+${userRequest}
+
 Rules
+• Use the user's request to match items from the SQL rows.
+• If an item matches partially or ambiguously, make a best guess.
 • An item without an explicit quantity defaults to 1.
 • subtotal = Σ(quantity × unitPrice), rounded to 2 decimals.
-• Return JSON only—no markdown.
 
 SQL rows:
 ${JSON.stringify(sqlResult)}
 `;
 
-export const reviewOrderPrompt = (draft: DraftOrder) => `
+export const reviewOrderPrompt = (
+  draft: DraftOrder,
+  upSellEnabled: boolean
+) => `
 You are “Order Reviewer”.  Turn the draft order into a friendly summary for
 the diner and finish with a yes/no question asking for confirmation or
-changes.  Upsell politely if it feels natural (e.g., “Would you like fries
-with your burger?”).
+changes.
+
+${upSellEnabled && "If you can, suggest an up-sell."}
 
 Draft order:
 ${JSON.stringify(draft, null, 2)}
+`;
+
+export const checkModifierPrompt = (draft: DraftOrder, userRequest: string) => `
+You are “Modifier Checker”. Generate ONE SQL statement (SQLite dialect) to
+retrieve available modifiers for the items in the current draft order. Respond
+with that SQL ONLY.
+
+Guidelines
+• List the columns you need: modifier_id, name, price.
+• Use INNER JOIN
+• Ensure the query is efficient and concise.
+
+Draft order:
+${JSON.stringify(draft, null, 2)}
+
+User request:
+${userRequest}
+`;
+
+export const modifyOrderPrompt = (
+  draft: DraftOrder,
+  userRequest: string,
+  modifiers: any[]
+) => `
+You are “Order Modifier”.  Modify the draft order based on the user’s
+request.
+
+Draft order:
+${JSON.stringify(draft, null, 2)}
+
+Available Modifiers:
+${JSON.stringify(modifiers, null, 2)}
+
+User request: ${userRequest}
+Modify the draft order accordingly.
 `;

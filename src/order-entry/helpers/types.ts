@@ -24,3 +24,10 @@ export const draftOrderSchema = z.object({
   orderItems: z.array(draftOrderItemSchema),
 });
 export type DraftOrder = z.infer<typeof draftOrderSchema>;
+
+export const querySchema = z.object({
+  query: z.string(),
+  params: z.string().array().optional(),
+});
+
+export type Query = z.infer<typeof querySchema>;

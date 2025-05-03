@@ -9,11 +9,7 @@ import {
   itemSelectionSystemPrompt,
 } from "../agent/prompts";
 import { executeQuery } from "../helpers/db";
-import { draftOrderSchema } from "../helpers/types";
-
-const outputSchema = z.object({
-  query: z.string(),
-});
+import { draftOrderSchema, querySchema } from "../helpers/types";
 
 export const itemSelectionNode = async (
   state: typeof AgentStateAnnotation.State
@@ -23,23 +19,19 @@ export const itemSelectionNode = async (
 
   const tableDefinition = getTableDefinitions();
   const systemMessage = itemSelectionSystemPrompt(tableDefinition);
-  const structuredLLM = llm.withStructuredOutput(outputSchema);
+  const structuredLLM = llm.withStructuredOutput(querySchema);
   let prompt = `Here is the user message: "${lastMessage?.content}".`;
 
-  console.log("Prompt:", prompt);
-
-  const { query } = await structuredLLM.invoke([
+  const { query, params } = await structuredLLM.invoke([
     new SystemMessage(systemMessage),
     new HumanMessage(prompt),
   ]);
 
-  const result = await executeQuery(query);
-  prompt = convertSqlResultToDraftOrderPrompt(result);
+  const result = await executeQuery(query, params);
+  prompt = convertSqlResultToDraftOrderPrompt(result, prompt);
   const draftOrderLLM = llm.withStructuredOutput(draftOrderSchema);
 
   const draft = await draftOrderLLM.invoke([new HumanMessage(prompt)]);
-
-  console.log("Draft Order:", draft);
 
   return { draft };
 };
