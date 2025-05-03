@@ -1,4 +1,4 @@
-# Order-entry Agent Module
+# Order Entry Agent Module
 
 This module implements a conversational agent designed for taking food orders, potentially via voice interaction. It uses LangGraph to manage the conversation flow and interacts with a database for menu items and order persistence.
 
