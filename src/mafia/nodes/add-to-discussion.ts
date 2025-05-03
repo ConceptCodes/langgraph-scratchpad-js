@@ -4,6 +4,7 @@ import {
   HumanMessage,
   SystemMessage,
 } from "@langchain/core/messages";
+import { Command } from "@langchain/langgraph";
 
 import { llm } from "../helpers/llm";
 import type { DiscussionStateAnnotation } from "../agent/state";
@@ -15,7 +16,6 @@ import {
   suggestPlayerForEliminationDoctor,
 } from "../agent/prompts";
 import { Nodes } from "../helpers/constants";
-import { Command } from "@langchain/langgraph";
 
 const outputSchema = z.object({
   target: z.string().describe("The name of the player to eliminate"),

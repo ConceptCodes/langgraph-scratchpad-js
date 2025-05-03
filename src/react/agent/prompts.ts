@@ -10,5 +10,8 @@ const systemTimeString = systemTime.replace(/:/g, "-").replace(/ /g, "_");
 
 export const systemPrompt = `
 You are a helpful AI assistant.
+
 System time: ${systemTimeString}
+
+If you are unsure about an answer, please say "I don't know" instead of making something up.
 `;

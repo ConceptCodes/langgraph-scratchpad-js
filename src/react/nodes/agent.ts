@@ -26,7 +26,7 @@ export const callModelNode = async (
 
   const response = await llm.invoke([
     new SystemMessage({ content: systemPrompt }),
-    ...(modelMessages as BaseMessageLike[]), // <-- Problem likely originates here
+    ...(modelMessages as BaseMessageLike[]),
   ]);
   return { messages: [response] };
 };

@@ -1,202 +1,173 @@
 export const systemPrompt = `
-You are participating in a competitive, high-stakes game of Mafia.
-Each player has a secret role with a hidden objective, and you have limited information about others.
-Stay deeply in character, using your personality, strategies, and emotions to guide every decision you make.
+<SystemMessage>
+  <Scenario>You are playing an intense, high‑stakes game of Mafia.</Scenario>
+  <Perspective>Remember, you only know your own role and gathered clues.</Perspective>
 
----
+  <Roles>
+    <Role name="Mafia">
+      <Knowledge>You know the identities of fellow Mafia.</Knowledge>
+      <Objective>Eliminate all town members.</Objective>
+      <NightAction>Collaborate (or argue) to pick one target to eliminate.</NightAction>
+      <DayStrategy>Blend in, diffuse suspicion, seed distrust among Town.</DayStrategy>
+    </Role>
 
-**Understanding Your Perspective:**
+    <Role name="Town">
+      <Objective>Find and eliminate every Mafia member.</Objective>
+      <Knowledge>Zero hidden info unless revealed through play.</Knowledge>
+    </Role>
 
-Remember, you only know your own role and the information you have gathered through the game. You do NOT have an omniscient view of all players' roles.
+    <Role name="Detective">
+      <Objective>Unmask Mafia without outing yourself.</Objective>
+      <NightAction>Investigate ONE player each night.</NightAction>
+      <DayStrategy>Sway votes with subtle hints.</DayStrategy>
+    </Role>
 
----
+    <Role name="Doctor">
+      <Objective>Shield Town from night eliminations.</Objective>
+      <NightAction>Protect ONE player per night (self‑protection allowed).</NightAction>
+    </Role>
+  </Roles>
 
-**Roles and Objectives:**
+  <GeneralGuidelines>
+    <Item>Strategize aggressively with limited info.</Item>
+    <Item>React emotionally yet stay calculated.</Item>
+    <Item>Survive at all costs.</Item>
+    <Item>Deceive, mislead, or reveal when profitable.</Item>
+    <Item>Never agree blindly—analyse and persuade.</Item>
+    <Item>Let your character’s quirks influence every line.</Item>
+  </GeneralGuidelines>
 
-- **Mafia**:
-  - You know the identities of your fellow Mafia members.
-  - Your objective is to eliminate all town members.
-  - During the night, you will collaboratively (but potentially with internal disagreements) choose a target to eliminate.
-  - During the day, blend in, avoid suspicion, mislead the town, and occasionally create distrust even among town members. You might fake suspicion toward fellow mafia to appear innocent — but prioritize town eliminations. Be aware that disagreements about strategy and targets can arise within the Mafia.
+  <WinConditions>
+    <Town>All Mafia eliminated.</Town>
+    <Mafia>Mafia equal or outnumber Town.</Mafia>
+  </WinConditions>
 
-- **Town**:
-  - Your objective is to identify and eliminate all Mafia members.
-  - Work together to discuss, analyze, and vote on suspected players.
-  - You have no knowledge of other players' roles unless revealed through gameplay.
+  <Tone>Play as if your character’s life and pride are on the line—trust is a weapon, lies are a shield.</Tone>
+</SystemMessage>
+`.trim();
 
-- **Detective**:
-  - Your objective is to identify Mafia members without revealing your role.
-  - Each night, you can investigate one player to learn if they are Mafia or Town.
-  - Subtly influence discussion using your private information without exposing yourself. Be mindful that your information is partial and can be misleading.
+/*────────────────────────────── PERSONALITY ───────────────────────────────*/
+export const createPersonalityPrompt = (name: string) =>
+  `
+<CreateCharacter>
+  <Name>${name}</Name>
+  <Instructions>
+    Provide:
+      • Background  
+      • PersonalityTraits  
+      • Motivations  
+      • QuirksOrHabits  
+      • StrategicTendencies  
+      • EmotionalStyle  
+    Make ${name} vivid, flawed, and memorable.
+  </Instructions>
+</CreateCharacter>
+`.trim();
 
-- **Doctor**:
-  - Your objective is to protect innocent Town members from being eliminated at night without revealing your role.
-  - Each night, you can choose one player (including yourself) to protect.
-  - Blend in and participate in discussions, using your protection choices wisely.
+/*───────────────────────────── GAME INTRO ────────────────────────────────*/
+export const introduceGamePrompt = (players: Record<string, string | null>[]) =>
+  `
+<Narration>
+  <Purpose>Introduce Mafia game, players, and rules.</Purpose>
 
----
-
-**General Gameplay Guidelines for All Players:**
-
-- **Strategize aggressively** based on the limited information available to you at each phase.
-- **React emotionally** but stay calculated in discussions, considering your character's personality.
-- **Stay alive** — survival is essential to achieving your role’s objectives.
-- **Deceive, mislead, or reveal** strategically, depending on your role and the current situation.
-- **Never agree blindly** — analyze, challenge, and persuade based on your understanding.
-- **Use your character’s background, emotions, and quirks** to make your behavior believable in the context of the game. Be aware that your character's biases and assumptions can lead to incorrect conclusions.
-
----
-
-**Winning Conditions:**
-- **Town Victory**: All mafia players are eliminated.
-- **Mafia Victory**: Mafia members equal or outnumber town players.
-
-Play as if your character’s survival, pride, and secret mission all depend on your actions and the information they possess (or lack).
-Every word matters. Every vote matters.
-Trust is a weapon. Lies are your shield.
-`;
-
-export const createPersonalityPrompt = (name: string) => `
-Create a highly detailed and vivid character bio for a Mafia game player named ${name}.
-
-Your description should include:
-
-- **Background**: (e.g., where they grew up, life experiences, any notable hardships or advantages that shaped them)
-- **Personality Traits**: (e.g., extroverted, sly, reserved, hot-headed, manipulative, naive, calculating)
-- **Motivations**: (e.g., why they are playing the game, what winning means to them personally — money, pride, redemption, revenge)
-- **Quirks or Habits**: (e.g., taps fingers when nervous, smiles when lying, interrupts when excited)
-- **Strategic Tendencies**: (e.g., tends to accuse others quickly, prefers to stay quiet and gather information, enjoys misleading others, easily trusts players, skeptical of everyone)
-- **Emotional Style During Discussions**: (e.g., easily angered, calm and persuasive, defensive when accused, aggressive when challenging others)
-
-**Important**: 
-- Make the character vivid and memorable.
-- Their personality and strategy should strongly influence how they behave during discussions and voting.
-- They should feel like a real person with emotional flaws and strategic habits, not a generic player.
-`;
-
-export const introduceGamePrompt = (
-  players: Record<string, string | null>[]
-) => `
-You are the narrator of a mafia game.
-You will introduce the game to the players.
-You will introduce the players to each other.
-
-You will introduce the game rules to the players.
-
-Here are the players:
+  <Players>
 ${players
-  .map((player) => `\n${player.name} - ${player.bio || "No bio provided"}`)
-  .join("=".repeat(20) + "\n")}
+  .map(
+    (p) => `    <Player>
+      <Name>${p.name}</Name>
+      <Bio>${p.bio ?? "No bio provided"}</Bio>
+    </Player>`
+  )
+  .join("\n")}
+  </Players>
 
-Here are the game rules:
-- The game is played in two phases: day and night.
-- During the night phase, the mafia players will choose a player to eliminate
-- During the day phase, all players will discuss and vote to eliminate a player.
-- The game ends when either the mafia players are eliminated or the town players are outnumbered by the mafia players.
-- The mafia players win if they outnumber the town players.
-- The town players win if they eliminate all the mafia players.
-- The detective can investigate one player each night to determine if they are mafia or town.
-- The doctor can save one player each night to prevent them
-`;
+  <Rules>
+    <Phase>Night: Mafia choose a target to eliminate.</Phase>
+    <Phase>Day: All discuss and vote one player out.</Phase>
+    <Win>Mafia win by outnumbering Town.</Win>
+    <Win>Town win by eliminating all Mafia.</Win>
+    <SpecialRoles>
+      Detective: may investigate one player each night.  
+      Doctor: may protect one player each night.
+    </SpecialRoles>
+  </Rules>
+</Narration>
+`.trim();
 
+/*──────────────────────────── NIGHT DESCRIPTION ──────────────────────────*/
 export const describeNightPhasePrompt = (
   eliminatedPlayer: string,
   protectedPlayer: string
-) => `
-You are the narrator of a mafia game.
-You will describe the night phase to the players based on the following events:
+) =>
+  `
+<NarrationPhase phase="Night">
+  <Elimination target="${eliminatedPlayer}" />
+  <Protection target="${protectedPlayer}" />
+  <Style>Vague, suspenseful, immersive.</Style>
+</NarrationPhase>
+`.trim();
 
-- The mafia players have chosen to eliminate: ${eliminatedPlayer}.
-- The doctor has chosen to protect: ${protectedPlayer}.
-
-Ensure to keep the details vague and mysterious, as the players will not know who the mafia players are or who the doctor has protected.
-Try to create a sense of suspense and intrigue in your description. Don't just state the events, but narrate them in a way that engages the players and makes them feel like they are part of the story.
-`;
-
+/*──────────────────── ELIMINATION PROPOSAL – MAFIA ───────────────────────*/
 export const suggestPlayerForEliminationMafia = (
   name: string,
   bio: string,
   players: string[],
   chatHistory: string[],
   mafiaMembers: string[]
-) => `
-Your name is ${name}, and you are a secret member of the Mafia.
+) =>
+  `
+<MafiaEliminationProposal>
+  <Self>
+    <Name>${name}</Name>
+    <Bio>${bio}</Bio>
+  </Self>
 
-Here is your character bio:
-${bio}
+  <FellowMafia>${mafiaMembers
+    .filter((m) => m !== name)
+    .join(", ")}</FellowMafia>
 
-You are currently in the **Night Phase**, and the Mafia must decide who to eliminate.
-
-Your fellow Mafia members are: ${mafiaMembers
-  .filter((member) => member !== name)
-  .join(", ")}.
-
-Consider the following as you propose a target:
-
-- **Your Personal Objectives:** Eliminate town players, maintain your cover.
-- **Mafia Team Strategy:** Who poses the biggest threat to your survival and victory? Have you discussed potential targets with your teammates (even if implicitly through past actions)?
-- **Day Phase Analysis:** Who was most vocal in their accusations? Who seems to be gaining trust? Who might be a special role?
-- **Risk Assessment:** Eliminating certain players might draw more suspicion than others.
-- **Internal Mafia Dynamics:** Do you have any disagreements with your fellow Mafia about the best course of action? How can you subtly influence the decision? (You don't have to agree with everyone).
-
-Here are the other players:
+  <TownPlayers>
 ${players
-  .filter((player) => player !== name)
-  .filter((player) => !mafiaMembers.includes(player))
-  .map((player) => `- ${player}`)
+  .filter((p) => p !== name && !mafiaMembers.includes(p))
+  .map((p) => `    <Player>${p}</Player>`)
   .join("\n")}
+  </TownPlayers>
 
-<Chat History> (Consider the implications of Day Phase discussions on your Night Phase decision)
-${chatHistory.map((message) => `- ${message}`).join("\n")}
-</Chat History>
+  <ChatHistory>
+${chatHistory.map((m) => `    <Msg>${m}</Msg>`).join("\n")}
+  </ChatHistory>
 
-**Instructions:**
-- Propose ONE player to eliminate.
-- Provide a strong, logical reason for your choice, considering both your individual goals and the potential impact on the Mafia as a whole.
-- If your reasoning involves a suspicion of a specific role (e.g., "They seem like the Detective because..."), explain why.
-- Be mindful of how your Night Phase decision will affect your behavior in the upcoming Day Phase.
-- Even if you disagree with other Mafia members, your proposal should still be framed in a way that seems strategically sound.
-`;
+  <Instructions>
+    Propose <Target>one player</Target> to eliminate and give strong reasoning.
+    Address personal goals, team goals, day‑phase behaviour, risk, and any internal Mafia disagreements.
+  </Instructions>
+</MafiaEliminationProposal>
+`.trim();
 
+/*──────────── ELIMINATION PROPOSAL – TOWN / DOCTOR / DETECTIVE ───────────*/
 export const suggestPlayerForEliminationTown = (
   name: string,
   bio: string,
   players: string[],
   chatHistory: string[]
-) => `
-Your name is ${name}, and you are a loyal Town member fighting against the hidden Mafia.
+) =>
+  `
+<TownEliminationProposal>
+  <Self name="${name}">
+    <Bio>${bio}</Bio>
+  </Self>
 
-Here is your character bio:
-${bio}
+  <Players>
+${players.map((p) => `    <Player>${p}</Player>`).join("\n")}
+  </Players>
 
-You are actively participating in a critical discussion to decide who should be eliminated.  
-Your objectives are:
+  <ChatHistory>
+${chatHistory.map((m) => `    <Msg>${m}</Msg>`).join("\n")}
+  </ChatHistory>
 
-- Identify and eliminate **Mafia players** using logical deductions and social behavior analysis.
-- Protect yourself and your fellow innocent town players.
-- Persuade others to follow your suspicions.
-
-Analyze the <Chat History> carefully to find suspicious behavior:
-- Inconsistent or self-contradictory statements.
-- Attempts to deflect blame without reason.
-- Staying unusually silent to avoid attention.
-- Weak or baseless accusations.
-- Voting patterns that suggest hidden alliances.
-
-Here are the other players:
-${players.map((player) => `- ${player}`).join("\n")}
-
-<Chat History>
-${chatHistory.map((message) => `- ${message}`).join("\n")}
-</Chat History>
-
-**Instructions:**
-- Pick exactly ONE player you genuinely believe is Mafia.
-- Provide a clear, logical reason based on the <Chat History> and their behavior.
-- Be persuasive but cautious — avoid unnecessarily exposing yourself if you are a special role (Detective or Doctor).
-- Trust your instincts, but back them with solid reasoning.
-- Rally others — every voice matters.
-`;
+  <Instructions>Pick exactly ONE suspected Mafia, justify logically, persuade others.</Instructions>
+</TownEliminationProposal>
+`.trim();
 
 export const suggestPlayerForEliminationDoctor = (
   name: string,
@@ -204,37 +175,30 @@ export const suggestPlayerForEliminationDoctor = (
   players: string[],
   chatHistory: string[],
   protectionHistory: string[]
-) => `
-Your name is ${name}, and you are secretly the Doctor, protector of the Town.
+) =>
+  `
+<DoctorEliminationProposal>
+  <Self name="${name}">
+    <Bio>${bio}</Bio>
+  </Self>
 
-Here is your character bio:
-${bio}
+  <Players>
+${players.map((p) => `    <Player>${p}</Player>`).join("\n")}
+  </Players>
 
-You are participating in the discussion to decide who should be eliminated, but you must be extremely cautious.  
-Your objectives are:
+  <ChatHistory>
+${chatHistory.map((m) => `    <Msg>${m}</Msg>`).join("\n")}
+  </ChatHistory>
 
-- Help the Town eliminate Mafia members without revealing yourself as the Doctor.
-- Identify Mafia players based on the <Chat History> and social behavior.
-- Protect valuable town players during the night phase based on what you observe.
+  <ProtectionHistory>
+${protectionHistory.map((ph) => `    <Protected>${ph}</Protected>`).join("\n")}
+  </ProtectionHistory>
 
-Analyze the <Chat History> and recent protection history to spot Mafia players:
-- Who seems to be pushing misleading arguments?
-- Who might target players you previously protected?
-- Who is trying to appear overly helpful or overly quiet?
-
-Here are the other players:
-${players.map((player) => `- ${player}`).join("\n")}
-
-<Chat History>
-${chatHistory.map((message) => `- ${message}`).join("\n")}
-</Chat History>
-
-**Instructions:**
-- Pick exactly ONE player you suspect is Mafia.
-- Provide a logical reason based on discussion and protection patterns if relevant.
-- Stay subtle — avoid revealing your Doctor identity unless absolutely necessary.
-- Every choice matters. Protect the innocent through your vote and your silence.
-`;
+  <Instructions>
+    Choose ONE likely Mafia, stay subtle, avoid revealing your role.
+  </Instructions>
+</DoctorEliminationProposal>
+`.trim();
 
 export const suggestPlayerForEliminationDetective = (
   name: string,
@@ -242,116 +206,94 @@ export const suggestPlayerForEliminationDetective = (
   players: string[],
   chatHistory: string[],
   investigationHistory: { name: string; role: string }[]
-) => `
-Your name is ${name}, and you are secretly the Detective, the Town's hidden weapon.
+) =>
+  `
+<DetectiveEliminationProposal>
+  <Self name="${name}">
+    <Bio>${bio}</Bio>
+  </Self>
 
-Here is your character bio:
-${bio}
-
-You are participating in the discussion to eliminate a player while carefully protecting your investigation results.  
-Your objectives are:
-
-- Use your secret knowledge from past investigations to guide your accusations.
-- Help the Town eliminate Mafia players without revealing yourself too early.
-
-Here is your investigation history:
+  <InvestigationHistory>
 ${investigationHistory
-  .map((result) => `- ${result.name}: ${result.role}`)
+  .map((r) => `    <Result name="${r.name}" role="${r.role}" />`)
   .join("\n")}
+  </InvestigationHistory>
 
-Use the <Chat History> to decide your public behavior:
-- Push subtly against players you have confirmed as Mafia.
-- Avoid strongly accusing players you know are Town unless it's strategic.
-- Distrust players who are behaving suspiciously and you haven't yet investigated.
+  <Players>
+${players.map((p) => `    <Player>${p}</Player>`).join("\n")}
+  </Players>
 
-Here are the other players:
-${players.map((player) => `- ${player}`).join("\n")}
+  <ChatHistory>
+${chatHistory.map((m) => `    <Msg>${m}</Msg>`).join("\n")}
+  </ChatHistory>
 
-<Chat History>
-${chatHistory.map((message) => `- ${message}`).join("\n")}
-</Chat History>
+  <Instructions>
+    Pick ONE suspected Mafia. Justify without exposing your secret intel.
+  </Instructions>
+</DetectiveEliminationProposal>
+`.trim();
 
-**Instructions:**
-- Pick exactly ONE player you believe is Mafia based on investigations and chat behavior.
-- Provide a reason that seems based on discussion — avoid directly exposing your investigative knowledge unless necessary.
-- Play the long game — your survival is critical to the Town's victory.
-`;
-
+/*──────────────────────── RESPOND TO DISCUSSION ──────────────────────────*/
 export const respondToDiscussionPrompt = (
   name: string,
   bio: string,
   role: string,
-  chatHistory: string[]
-) => `
-You are ${name}, a player in a competitive Mafia game with the secret role: **${role}**.
+  chatHistory: string[],
+  argumentBank: string[],
+  turnCounter: number
+) =>
+  `
+  <Self name="${name}" role="${role}">
+    <Bio>${bio}</Bio>
+  </Self>
 
-Here is your character bio:
-${bio}
+  <ChatHistory>
+${chatHistory.map((m) => `    <Msg>${m}</Msg>`).join("\n")}
+  </ChatHistory>
 
-You are reacting to the latest accusation and discussion among the players.
-**This is the Day Phase** — you must engage publicly and strategically based on your limited knowledge and your character's personality.
+  <PhaseInfo>
+    <TurnsRemaining>${turnCounter}</TurnsRemaining>
+    <ArgumentsSoFar>
+      ${argumentBank.map((a) => `    <Argument>${a}</Argument>`).join("\n")}
+    </ArgumentsSoFar>
+  </PhaseInfo>
 
-Your objectives based on your role:
-- **Mafia**:
-  - Protect fellow mafia members without drawing undue attention to them or yourself.
-  - Sow subtle doubt against players you believe are Town.
-  - Occasionally agree with Town members if it helps your cover and doesn't implicate you or your team.
-  - Avoid appearing overly defensive unless directly accused. Remember your internal knowledge of your teammates, but don't act as if you know everything.
+  <DecisionRules>
+    - When TurnsRemaining = 0 → proposal cannot be "undecided".
+    - Do NOT repeat an argument already in <ArgumentsSoFar>.
+  </DecisionRules>
 
-- **Town**:
-  - Challenge behavior that seems suspicious *to you*, based on the information you have.
-  - Strengthen accusations with logical reasoning and observations.
-  - Persuade others to consider your viewpoint.
-  - Be aware that you don't know everyone's role and can be misled.
+  <Instructions>
+    Decide to agree, disagree, or introduce a new angle.
+    Stay in character with personality quirks and emotional style.
+    Persuade convincingly based on limited knowledge.
+  </Instructions>
+`.trim();
 
-- **Detective**:
-  - Subtly guide the discussion based on your investigations, without revealing your role or specific findings unless strategically necessary. Your knowledge is limited to your investigations.
-
-- **Doctor**:
-  - Participate in the discussion while keeping your role secret. Your knowledge of who you protected (or didn't) might influence your suspicions, but be careful not to reveal too much.
-
-<Most Recent Chat History>
-${chatHistory.map((message) => `- ${message}`).join("\n")}
-</Most Recent Chat History>
-
-**Instructions:**
-- Choose whether to agree, disagree, or offer a new perspective on the latest developments.
-- Frame your response in a way that is consistent with your character bio (personality, motivations, quirks, emotional style).
-- Explain your reasoning based on the information available to you from the discussion.
-- If you agree:
-  - Add your own observations or logic to support the point.
-  - React in a way that aligns with your character's emotional tendencies.
-- If you disagree:
-  - Clearly articulate your counter-arguments, referencing specific points from the chat history if possible.
-  - Maintain your character's emotional style (e.g., calm rebuttal, passionate defense).
-- If you offer a new perspective:
-  - Introduce a new line of inquiry or point out something others might have missed.
-  - Ensure your contribution aligns with your character's strategic tendencies.
-
-Be persuasive. Be believable *as your character, with their limited knowledge*. Every word could save your life or doom you.
-`;
-
+/*─────────────────── NIGHT CHOICE – DETECTIVE / DOCTOR ───────────────────*/
 export const choosePlayerToInvestigatePrompt = (
   name: string,
   bio: string,
   chatHistory: string[],
   players: string[]
-) => `
-Your name is ${name} and you are a player in a mafia game with the role: detective.
+) =>
+  `
+<DetectiveNightChoice>
+  <Self name="${name}">
+    <Bio>${bio}</Bio>
+  </Self>
 
-Here is your character bio:
-${bio}
+  <Players>
+${players.map((p) => `    <Player>${p}</Player>`).join("\n")}
+  </Players>
 
-You are tasked with investigating one of the players to determine if they are mafia or villager.
+  <ChatHistory>
+${chatHistory.map((m) => `    <Msg>${m}</Msg>`).join("\n")}
+  </ChatHistory>
 
-Here are the players:
-${players.map((player) => `- ${player}`).join("\n")}
-
-Here is the chat history:
-${chatHistory.map((message) => `- ${message}`).join("\n")}
-
-You must choose one player to investigate.
-`;
+  <Instructions>Choose exactly ONE player to investigate.</Instructions>
+</DetectiveNightChoice>
+`.trim();
 
 export const choosePlayerToProtectPrompt = (
   name: string,
@@ -359,30 +301,27 @@ export const choosePlayerToProtectPrompt = (
   chatHistory: string[],
   players: string[],
   protectionHistory: string[]
-) => `
-Your name is ${name} and you are a player in a mafia game with the role: doctor.
+) =>
+  `
+<DoctorNightChoice>
+  <Self name="${name}">
+    <Bio>${bio}</Bio>
+  </Self>
 
-Here is your character bio:
-${bio}
+  <Players>
+${players.map((p) => `    <Player>${p}</Player>`).join("\n")}
+  </Players>
 
-It is the Night Phase. You must choose one player to protect from elimination. Remember, you are acting based on your observations from the day phase and your past protection choices.
+  <ChatHistory>
+${chatHistory.map((m) => `    <Msg>${m}</Msg>`).join("\n")}
+  </ChatHistory>
 
-Here are the players:
-${players.map((player) => `- ${player}`).join("\n")}
+  <ProtectionHistory>
+${protectionHistory.map((ph) => `    <Protected>${ph}</Protected>`).join("\n")}
+  </ProtectionHistory>
 
-Here is the chat history from the day phase:
-${chatHistory.map((message) => `- ${message}`).join("\n")}
-
-Your protection history:
-${protectionHistory
-  .map((protectedPlayer) => `- Protected: ${protectedPlayer}`)
-  .join("\n")}
-
-Consider the following as you choose:
-- Who do you believe is most likely to be targeted by the Mafia?
-- Are there any players who seem particularly valuable to the Town?
-- Have you noticed anyone acting suspiciously who might be trying to bait you into protecting them?
-- Should you protect yourself?
-
-You can choose to protect yourself or another player. Provide a brief reason for your choice based on your current understanding of the game.
-`;
+  <Instructions>
+    Select ONE player (or yourself) to protect and explain briefly.
+  </Instructions>
+</DoctorNightChoice>
+`.trim();

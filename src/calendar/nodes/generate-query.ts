@@ -9,11 +9,14 @@ const outputSchema = z.object({
   query: z
     .string()
     .describe("The generated SQL query based on the user request"),
+  params: z
+    .array(z.string())
+    .describe("The parameters for the SQL query, if any"),
 });
 
 export const generateQueryNode = async (
   state: typeof AgentStateAnnotation.State
-) => {
+): Promise<typeof AgentStateAnnotation.Update> => {
   const { messages, metadata, queryError, queryResults } = state;
   const lastMessage = messages.at(-1);
   const structuredLLM = llm.withStructuredOutput(outputSchema);
@@ -25,10 +28,10 @@ export const generateQueryNode = async (
     queryError.message
   );
 
-  const { query } = await structuredLLM.invoke([
+  const { query, params } = await structuredLLM.invoke([
     new SystemMessage({ content: systemMessagePrompt }),
     new HumanMessage({ content: prompt }),
   ]);
 
-  return { query };
+  return { query, params };
 };

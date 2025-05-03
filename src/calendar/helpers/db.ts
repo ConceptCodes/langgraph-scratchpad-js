@@ -120,31 +120,26 @@ export const getAllTableSchemas = async (): Promise<
 };
 
 export const executeQuery = async (
-  query: string
+  query: string,
+  params: any[] = []
 ): Promise<Event[] | DBError> => {
   const dataSource = await initializeDataSource();
   try {
     const queryRunner = dataSource.createQueryRunner();
     try {
-      const result = await queryRunner.query(query);
+      const result = await queryRunner.query(query, params);
 
       if (Array.isArray(result)) {
         return result.map(
           (row: any) =>
             new Event(
-              row.id,
               row.title,
-              row.start_time,
-              row.end_time,
-              Boolean(row.all_day)
+              new Date(row.start_time),
+              new Date(row.end_time),
+              row.all_day
             )
         );
       } else {
-        console.log(
-          `Non-select query executed successfully. Result: ${JSON.stringify(
-            result
-          )}`
-        );
         return [];
       }
     } finally {

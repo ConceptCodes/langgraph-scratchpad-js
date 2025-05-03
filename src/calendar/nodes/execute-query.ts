@@ -3,8 +3,9 @@ import { DBError, executeQuery } from "../helpers/db";
 
 export const executeQueryNode = async (
   state: typeof AgentStateAnnotation.State
-) => {
-  const results = await executeQuery(state.query);
+): Promise<typeof AgentStateAnnotation.Update> => {
+  const { query, params } = state;
+  const results = await executeQuery(query, params);
 
   if (results instanceof DBError) {
     return {
@@ -18,5 +19,6 @@ export const executeQueryNode = async (
     queryResults: results,
     queryError: { message: "", isError: false },
     isValid: true,
+    confirmation: false,
   };
 };

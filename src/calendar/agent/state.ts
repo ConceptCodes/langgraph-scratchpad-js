@@ -19,6 +19,10 @@ export const AgentStateAnnotation = Annotation.Root({
     reducer: (a, b) => b ?? a,
     default: () => "",
   }),
+  params: Annotation<string[]>({
+    reducer: (a, b) => b ?? a,
+    default: () => [],
+  }),
   queryResults: Annotation<Event[]>({
     reducer: (a, b) => b ?? a,
     default: () => [],

@@ -1,9 +1,9 @@
 import { z } from "zod";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 
 import { llm } from "../helpers/llm";
 import type { NightStateAnnotation } from "../agent/state";
 import { choosePlayerToProtectPrompt, systemPrompt } from "../agent/prompts";
-import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 
 const outputSchema = z.object({
   player: z.string().describe("The name of the player to protect"),

@@ -67,6 +67,23 @@ export const DiscussionStateAnnotation = Annotation.Root({
     reducer: (a, b) => b ?? a,
     default: () => [],
   }),
+  turnCounter: Annotation<number>({
+    reducer: (a, b) => b ?? a,
+    default: () => 0,
+  }),
+  argumentBank: Annotation<string[]>({
+    reducer: (a, b) => a.concat(b),
+    default: () => [],
+  }),
+  proposals: Annotation<
+    Map<
+      string,
+      {
+        name: string;
+        confidence: number;
+      }
+    >
+  >,
 });
 
 export const NightStateAnnotation = Annotation.Root({
