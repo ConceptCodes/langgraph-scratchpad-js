@@ -4,7 +4,7 @@ import { llm } from "../helpers/llm";
 import {
   generateOutlineInstructions,
   generateOutlineInstructionsWithFeedback,
-  generateOutlinePrompts,
+  generateOutlinePrompt,
 } from "../agent/prompts";
 import type { AgentStateAnnotation } from "../agent/state";
 import { podcastOutlineSchema } from "../helpers/types";
@@ -26,7 +26,7 @@ export const generateOutlineNode = async (
       )
     : generateOutlineInstructions(PODCAST_OUTLINE, topics, quotes, insights);
     
-  const prompt = generateOutlinePrompts(sourceMaterial);
+  const prompt = generateOutlinePrompt(sourceMaterial);
 
   const outline = await structuredLLM.invoke([
     new SystemMessage({ content: systemMessage }),

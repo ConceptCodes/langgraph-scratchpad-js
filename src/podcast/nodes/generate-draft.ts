@@ -4,7 +4,7 @@ import { llm } from "../helpers/llm";
 import {
   generateDraftInstructions,
   generateDraftInstructionsWithFeedback,
-  generateDraftPrompts,
+  generateDraftPrompt,
 } from "../agent/prompts";
 import type {
   AgentStateAnnotation,
@@ -22,7 +22,7 @@ export const generateDraftNode = async (
   const title = config.configurable?.podcastTitle ?? "Podcast";
 
   const structuredLLM = llm.withStructuredOutput(scriptSchema);
-  const prompt = generateDraftPrompts(
+  const prompt = generateDraftPrompt(
     title,
     lang,
     sourceMaterial,

@@ -6,7 +6,7 @@ import { llm } from "../helpers/llm";
 import type { AgentStateAnnotation } from "../agent/state";
 import {
   reviewOutlineInstructions,
-  reviewOutlinePrompts,
+  reviewOutlinePrompt,
 } from "../agent/prompts";
 import { Nodes } from "../helpers/constants";
 import { outputSchema } from "../helpers/types";
@@ -17,7 +17,7 @@ export const reviewOutlineNode = async (
   const { outline } = state;
 
   const structuredLLM = llm.withStructuredOutput(outputSchema);
-  const prompt = reviewOutlinePrompts(JSON.stringify(outline, null, 2));
+  const prompt = reviewOutlinePrompt(JSON.stringify(outline, null, 2));
 
   const { grade, feedback } = await structuredLLM.invoke([
     new SystemMessage({ content: reviewOutlineInstructions }),

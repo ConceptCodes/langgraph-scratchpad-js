@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { Annotation, START, END, StateGraph } from "@langchain/langgraph";
 
 const AgentStateAnnotation = Annotation.Root({

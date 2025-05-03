@@ -5,7 +5,7 @@ import type { AgentStateAnnotation } from "../agent/state";
 import { llm } from "../helpers/llm";
 import {
   extractKeyInsightInstructions,
-  extractKeyInsightsPrompts,
+  extractKeyInsightsPrompt,
   extractKeyInsightsWithFeedbackInstructions,
 } from "../agent/prompts";
 
@@ -24,7 +24,7 @@ export const extractKeyInsightsNode = async (
   const { sourceMaterial, feedback } = state;
 
   const structuredLLM = llm.withStructuredOutput(outputSchema);
-  const prompt = extractKeyInsightsPrompts(sourceMaterial);
+  const prompt = extractKeyInsightsPrompt(sourceMaterial);
 
   const systemMessage = feedback
     ? extractKeyInsightsWithFeedbackInstructions(feedback)

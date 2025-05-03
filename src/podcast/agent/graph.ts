@@ -16,6 +16,7 @@ import { buildEpisodeNode } from "../nodes/build-episode";
 import { generateOutlineNode } from "../nodes/generate-outline";
 import { executePlanNode } from "../nodes/build-all-sections";
 import { generateAudioNode } from "../nodes/generate-audio";
+import { reviewEpisodeNode } from "../nodes/review-episode";
 
 const subGraph = new StateGraph(
   { stateSchema: AgentStateAnnotation },
@@ -47,6 +48,9 @@ const workflow = new StateGraph(
   })
   .addNode(Nodes.BUILD_SECTION, subGraph)
   .addNode(Nodes.BUILD_EPISODE, buildEpisodeNode)
+  .addNode(Nodes.REVIEW_EPISODE, reviewEpisodeNode, {
+    ends: [Nodes.BUILD_EPISODE, Nodes.GENERATE_AUDIO],
+  })
   .addNode(Nodes.GENERATE_AUDIO, generateAudioNode);
 
 workflow.addEdge(START, Nodes.EXTRACT_KEY_INSIGHTS);
@@ -56,7 +60,7 @@ workflow.addConditionalEdges(Nodes.REVIEW_OUTLINE, executePlanNode, [
   Nodes.BUILD_SECTION,
 ]);
 workflow.addEdge(Nodes.BUILD_SECTION, Nodes.BUILD_EPISODE);
-workflow.addEdge(Nodes.BUILD_EPISODE, Nodes.GENERATE_AUDIO);
+workflow.addEdge(Nodes.BUILD_EPISODE, Nodes.REVIEW_EPISODE);
 workflow.addEdge(Nodes.GENERATE_AUDIO, END);
 
 export const graph = workflow.compile({

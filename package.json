@@ -11,11 +11,13 @@
     "podcast": "bun run src/podcast/index.ts",
     "react": "bun run src/react/index.ts",
     "planner": "bun run src/planner/index.ts",
-    "mafia": "bun run src/mafia/index.ts"
+    "mafia": "bun run src/mafia/index.ts",
+    "order-entry": "bun run src/order-entry/index.ts"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/bun": "^1.2.10",
+    "@types/play-sound": "^1.1.2",
     "bun-types": "^1.2.10"
   },
   "peerDependencies": {
@@ -30,9 +32,12 @@
     "@tavily/core": "^0.5.0",
     "boxen": "^8.0.1",
     "langchain": "^0.3.24",
+    "node-record-lpcm16": "^1.0.1",
     "openai": "^4.96.0",
+    "play-sound": "^1.1.6",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.22",
+    "typeorm-naming-strategies": "^4.1.0",
     "zod": "^3.24.3"
   }
 }

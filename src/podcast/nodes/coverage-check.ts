@@ -5,7 +5,7 @@ import { llm } from "../helpers/llm";
 import type { AgentStateAnnotation } from "../agent/state";
 import {
   coverageCheckInstructions,
-  coverageCheckPrompts,
+  coverageCheckPrompt,
 } from "../agent/prompts";
 import { Nodes } from "../helpers/constants";
 import { outputSchema } from "../helpers/types";
@@ -16,7 +16,7 @@ export const coverageCheckNode = async (
   const { topics, quotes, insights, sourceMaterial } = state;
 
   const structuredLLM = llm.withStructuredOutput(outputSchema);
-  const prompt = coverageCheckPrompts(topics, quotes, insights, sourceMaterial);
+  const prompt = coverageCheckPrompt(topics, quotes, insights, sourceMaterial);
 
   const { grade, feedback } = await structuredLLM.invoke([
     new SystemMessage({ content: coverageCheckInstructions }),

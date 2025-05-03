@@ -10,7 +10,8 @@
     "podcast": "./src/podcast/agent/graph.ts:graph",
     "react": "./src/react/agent/graph.ts:graph",
     "planner": "./src/planner/agent/graph.ts:graph",
-    "mafia": "./src/mafia/agent/graph.ts:graph"
+    "mafia": "./src/mafia/agent/graph.ts:graph",
+    "order-entry": "./src/order-entry/agent/graph.ts:graph"
   },
   "env": ".env"
 }
