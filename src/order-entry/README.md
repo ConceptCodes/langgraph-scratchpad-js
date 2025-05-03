@@ -1,31 +1,75 @@
 # Order-entry Agent Module
 
-Description of the order-entry agent.
+This module implements a conversational agent designed for taking food orders, potentially via voice interaction. It uses LangGraph to manage the conversation flow and interacts with a database for menu items and order persistence.
 
 ## Architecture
 
-(Add architecture details and diagram later)
-<!-- ![Order-entry Agent Architecture](/src/order-entry/assets/graph.png) -->
+The agent is built using LangGraph's `StateGraph`. The core flow is defined in [`src/order-entry/agent/graph.ts`](src/order-entry/agent/graph.ts).
+
+*   **State Management:** The conversation state ([`AgentStateAnnotation`](src/order-entry/agent/state.ts)) tracks messages, the draft order, query results, and flow control flags. Configuration like `businessName` or `language` are passed via [`ConfigurationAnnotation`](src/order-entry/agent/state.ts).
+*   **Nodes:** The graph consists of several nodes representing different stages of the order process (defined in [`src/order-entry/helpers/constants.ts`](src/order-entry/helpers/constants.ts)):
+    *   `WELCOME_MESSAGE`: Greets the user.
+    *   `AUDIO_INPUT`: Captures user input (likely voice).
+    *   `PARSE_INTENT`: Determines the user's goal (add item, modify, confirm).
+    *   `CHECK_INVENTORY`: Queries the database for menu items or modifiers.
+    *   `ITEM_SELECTION`: Adds items to the draft order based on inventory check.
+    *   `MODIFY_ORDER`: Updates the draft order (e.g., adds modifiers, changes quantity).
+    *   `REVIEW_ORDER`: Summarizes the draft order for the user.
+    *   `CONFIRM_ORDER`: Finalizes the order and provides a sign-off message.
+    *   `AUDIO_OUTPUT`: Sends responses back to the user (likely voice).
+*   **Flow:**
+    1.  Starts with `WELCOME_MESSAGE`.
+    2.  Cycles through `AUDIO_INPUT` -> `PARSE_INTENT`.
+    3.  `PARSE_INTENT` routes to `ITEM_SELECTION`, `MODIFY_ORDER`, or `CONFIRM_ORDER`.
+    4.  `ITEM_SELECTION` and `MODIFY_ORDER` may call `CHECK_INVENTORY` before updating the draft order.
+    5.  `ITEM_SELECTION` and `MODIFY_ORDER` typically lead to `REVIEW_ORDER`.
+    6.  `REVIEW_ORDER` and `CONFIRM_ORDER` lead to `AUDIO_OUTPUT`.
+    7.  The loop continues until `CONFIRM_ORDER` is reached or the user exits.
+*   **Persistence:** Uses `MemorySaver` for in-memory check-pointing of the conversation state.
+*   **Database:** Interacts with a SQLite database via TypeORM ([`src/order-entry/helpers/db.ts`](src/order-entry/helpers/db.ts)) to manage categories, products, modifiers, and orders.
+
+![Order-entry Agent Architecture](/src/order-entry/assets/graph.png)
 
 ## Functionality
 
-(Describe the steps the agent takes)
+1.  **Initialization:** Connects to the database ([`initializeDatabase`](src/order-entry/helpers/db.ts)).
+2.  **Greeting:** Welcomes the user ([`welcomeMessageNode`](src/order-entry/nodes/welcome-message.ts)).
+3.  **Interaction Loop:**
+    *   Receives user input ([`audioInputNode`](src/order-entry/nodes/audio-input.ts)).
+    *   Determines intent ([`parseIntentNode`](src/order-entry/nodes/parse-intent.ts)).
+    *   **Adding Items:** If intent is to add items, checks inventory ([`checkInventoryNode`](src/order-entry/nodes/check-inventory.ts)) and updates the draft order ([`itemSelectionNode`](src/order-entry/nodes/item-selection.ts)).
+    *   **Modifying Order:** If intent is to modify, may check available modifiers ([`checkInventoryNode`](src/order-entry/nodes/check-inventory.ts)) and updates the draft order ([`modifyOrderNode`](src/order-entry/nodes/modify-order.ts)).
+    *   **Reviewing Order:** Summarizes the current draft order ([`reviewOrderNode`](src/order-entry/nodes/review-order.ts)) and asks for confirmation or changes.
+    *   **Confirming Order:** If intent is to confirm, generates a final sign-off message ([`confirmOrderNode`](src/order-entry/nodes/confirm-order.ts)).
+    *   Sends responses back to the user ([`audioOutputNode`](src/order-entry/nodes/audio-output.ts)).
+4.  **Termination:** The loop ends when the order is confirmed or the user indicates they want to exit.
 
 ## Core Components
 
-*   **Graph Definition:** [`src/order-entry/agent/graph.ts`](/src/order-entry/agent/graph.ts)
-*   **State Management:** [`src/order-entry/agent/state.ts`](/src/order-entry/agent/state.ts)
-*   **Nodes:** [`src/order-entry/nodes/`](/src/order-entry/nodes)
-*   **Prompts:** [`src/order-entry/agent/prompts.ts`](/src/order-entry/agent/prompts.ts)
-*   **Helpers:** [`src/order-entry/helpers/`](/src/order-entry/helpers)
+*   **Graph Definition:** [`src/order-entry/agent/graph.ts`](src/order-entry/agent/graph.ts)
+*   **State Management:** [`src/order-entry/agent/state.ts`](src/order-entry/agent/state.ts)
+*   **Nodes:** [`src/order-entry/nodes/`](src/order-entry/nodes) (Contains logic for each step)
+*   **Prompts:** [`src/order-entry/agent/prompts.ts`](src/order-entry/agent/prompts.ts) (LLM prompts for various tasks)
+*   **Helpers:** [`src/order-entry/helpers/`](src/order-entry/helpers) (Database setup, constants, types, utility functions)
+*   **Database Schema:** Defined using TypeORM entities in [`src/order-entry/helpers/db.ts`](src/order-entry/helpers/db.ts)
+*   **Database Seeding:** [`src/order-entry/helpers/seed.ts`](src/order-entry/helpers/seed.ts)
 
 ## Prerequisites
 
 *   Node.js and Bun installed.
-*   Environment variables set (if needed).
+*   Environment variables set (if needed, e.g., API keys for LLMs or speech services).
+*   Database seeded with initial data.
+
+## Setup
+
+1.  **Install Dependencies:**
+    ```bash
+    bun install
+    ```
+2.  **Seed Database:** 
+    ```bash
+    bun run src/order-entry/helpers/seed.ts
+    ```
 
 ## Usage
 
-```bash
-bun run order-entry
-```

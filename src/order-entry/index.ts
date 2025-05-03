@@ -14,49 +14,49 @@ const drawOrderEntryGraph = async () => {
 const config = { configurable: { thread_id: getRandomThreadId() } };
 
 const run = async () => {
-  // await drawOrderEntryGraph(); // Uncomment to draw graph on run
+  await drawOrderEntryGraph(); // Uncomment to draw graph on run
 
-  let isRunning = true;
-  while (isRunning) {
-    const input = prompt("Input: ");
+  // let isRunning = true;
+  // while (isRunning) {
+  //   const input = prompt("Input: ");
 
-    if (!input || input.toLowerCase() === "exit") {
-      console.log("Exiting...");
-      isRunning = false;
-      break;
-    }
+  //   if (!input || input.toLowerCase() === "exit") {
+  //     console.log("Exiting...");
+  //     isRunning = false;
+  //     break;
+  //   }
 
-    try {
-      const result = graph.stream(
-        { messages: [new HumanMessage({ content: input })] },
-        {
-          ...config,
-          streamMode: "values", // Or "updates"
-        }
-      );
+  //   try {
+  //     const result = graph.stream(
+  //       { messages: [new HumanMessage({ content: input })] },
+  //       {
+  //         ...config,
+  //         streamMode: "values", // Or "updates"
+  //       }
+  //     );
 
-      for await (const chunk of await result) {
-        // Process streamed chunks - adjust based on your state/output
-        console.log("--- Chunk ---");
-        console.log(JSON.stringify(chunk, null, 2));
-        // Example: Accessing a specific node's output
-        // if (chunk.someNodeName) {
-        //   prettifyOutput(JSON.stringify(chunk.someNodeName), "blue");
-        // }
-      }
-      console.log("--- Stream End ---");
+  //     for await (const chunk of await result) {
+  //       // Process streamed chunks - adjust based on your state/output
+  //       console.log("--- Chunk ---");
+  //       console.log(JSON.stringify(chunk, null, 2));
+  //       // Example: Accessing a specific node's output
+  //       // if (chunk.someNodeName) {
+  //       //   prettifyOutput(JSON.stringify(chunk.someNodeName), "blue");
+  //       // }
+  //     }
+  //     console.log("--- Stream End ---");
 
-      // Or invoke directly for final result
-      // const finalResult = await graph.invoke(
-      //   { messages: [new HumanMessage({ content: input })] },
-      //   config
-      // );
-      // console.log("--- Final Result ---");
-      // console.log(JSON.stringify(finalResult, null, 2));
-    } catch (error) {
-      console.error("Error during graph execution:", error);
-    }
-  }
+  //     // Or invoke directly for final result
+  //     // const finalResult = await graph.invoke(
+  //     //   { messages: [new HumanMessage({ content: input })] },
+  //     //   config
+  //     // );
+  //     // console.log("--- Final Result ---");
+  //     // console.log(JSON.stringify(finalResult, null, 2));
+  //   } catch (error) {
+  //     console.error("Error during graph execution:", error);
+  //   }
+  // }
 };
 
 run().catch((error) => {
