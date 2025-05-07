@@ -55,9 +55,12 @@ The agent follows these steps:
 5.  **Validate SQL Query:** Checks the generated SQL query for potential issues or safety concerns before execution. If invalid, it loops back to regenerate the query.
     *   Node: [`isValidQueryNode`](/src/calendar/nodes/is-valid-query.ts)
     *   Prompt: [`validateQueryPrompt`](/src/calendar/agent/prompts.ts) (Implicitly used within the node)
-6.  **Execute SQL Query:** Runs the validated SQL query against the SQLite database. If an error occurs, it loops back to regenerate the query.
+6. **Confirm SQL Query:** Asks the user to confirm the generated SQL query before executing it. If the user rejects it, the flow ends.
+    *   Node: [`confirmQueryNode`](/src/calendar/nodes/confirmation.ts)
+    *   Prompt: [`userConfirmationPrompt`](/src/calendar/agent/prompts.ts) (Implicitly used within the node)
+7.  **Execute SQL Query:** Runs the validated SQL query against the SQLite database. If an error occurs, it loops back to regenerate the query.
     *   Node: [`executeQueryNode`](/src/calendar/nodes/execute-query.ts)
-7.  **Summarize Response:** Formulates a natural language response to the user based on the outcome of the database operation (success, data retrieved, etc.).
+8.  **Summarize Response:** Formulates a natural language response to the user based on the outcome of the database operation (success, data retrieved, etc.).
     *   Node: [`summarizeResultsNode`](/src/calendar/nodes/summarize-results.ts)
     *   Prompt: [`summarizeResponsePrompt`](/src/calendar/agent/prompts.ts) (Implicitly used within the node)
 
@@ -74,7 +77,7 @@ The agent follows these steps:
 *   Node.js and Bun installed.
 *   Environment variables set for:
     *   `OPENAI_API_KEY`: Your OpenAI API key.
-*   A local SQLite database file (`calendar.sqlite`) will be created automatically in the project root if it doesn't exist.
+*   A local SQLite database file (`calendar.sqlite`) will be created automatically in the modules root if it doesn't exist.
 
 ## Usage
 
