@@ -3,11 +3,24 @@
 This module implements a LangGraph agent designed to automate the process of researching a given topic and generating a structured report.
 Heavily inspired by the [LangSmith Research Agent](https://github.com/langchain-ai/open_deep_research)
 
-Examples are provided in the `assets` directory.
+Examples are provided in the [`assets`](src/research/assets) directory.
 
 ## Architecture
 
-![Research Agent Architecture](/src/research/assets/graph.png)
+```mermaid
+graph TD
+    START --> GENERATE_RESEARCH_PLAN
+    GENERATE_RESEARCH_PLAN -->|Parallel Execution| BUILD_SECTION
+    BUILD_SECTION --> GATHER_COMPLETED_SECTIONS
+    GATHER_COMPLETED_SECTIONS --> WRITE_FINAL_SECTIONS
+    WRITE_FINAL_SECTIONS --> COMPILE_FINAL_REPORT
+    COMPILE_FINAL_REPORT --> END
+
+    subgraph BUILD_SECTION
+        GENERATE_QUERY --> WEB_SEARCH
+        WEB_SEARCH --> WRITE_SECTION
+    end
+```
 
 ## Functionality
 
