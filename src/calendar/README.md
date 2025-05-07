@@ -6,7 +6,37 @@ This module implements a LangGraph agent designed to manage calendar events base
 
 The calendar agent uses LangGraph to orchestrate interactions between an LLM, a user, and a SQLite database storing event information.
 
-![Calendar Agent Architecture](/src/calendar/assets/graph.png)
+```mermaid
+flowchart TD
+    Start([__start__])
+    Router[ROUTER]
+    Gather[GATHER_REQUIREMENTS]
+    Gen[GENERATE_QUERY]
+    Valid[IS_VALID_QUERY]
+    Confirm[CONFIRM_QUERY]
+    Exec[EXECUTE_QUERY]
+    Summarize[SUMMARIZE_RESPONSE]
+    General[GENERAL]
+    End([__end__])
+
+    %% Main flow
+    Start --> Router
+    Router -.-> General
+    Router -.-> Gather
+    Gather --> Gen
+    Gen --> Valid
+    Valid -- approved --> Confirm
+    Confirm -- approved --> Exec
+    Exec -- success --> Summarize
+    Summarize --> End
+    General --> End
+
+    %% Error and alternate handling
+    Valid -. rejected -.-> Gen
+    Confirm -. rejected -.-> End
+    Exec -. error .-> Gen
+
+```
 
 ## Functionality
 
