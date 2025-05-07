@@ -15,7 +15,7 @@ const outputSchema = z.object({
 export const routerNode = async (state: typeof AgentStateAnnotation.State) => {
   const lastMessage = state.messages.at(-1);
 
-  const prompt = routerPrompt(options, lastMessage?.content as string);
+  const prompt = routerPrompt([...options], lastMessage?.content as string);
 
   const structuredLLM = llm.withStructuredOutput(outputSchema);
   const { next } = await structuredLLM.invoke([

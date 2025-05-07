@@ -62,6 +62,7 @@ ${userRequest}
 
 export const isValidSqlQueryPrompt = (
   query: string,
+  params: string[],
   userRequest: string,
   metadata: Record<string, string> = {}
 ) =>
@@ -76,12 +77,16 @@ Placeholders: expect :namedParams, never raw user strings.
 ${query}
 </Query>
 
+<QueryParameters>
+${JSON.stringify(params)}
+</QueryParameters>
+
 <UserRequest>
 ${userRequest}
 </UserRequest>
 
 <Metadata>
-${JSON.stringify(metadata)}
+${JSON.stringify(metadata, null, 2)}
 </Metadata>
 `.trim();
 
@@ -101,16 +106,16 @@ Generate **one** SQLite statement that accomplishes the request.
 ${userRequest}
 </UserRequest>
 ${
+  Object.keys(metadata).length
+    ? `<Metadata>\n${JSON.stringify(metadata)}\n</Metadata>`
+    : ""
+}
+${
   queryResults.length
     ? `<LastQueryResults>\n${JSON.stringify(queryResults)}\n</LastQueryResults>`
     : ""
 }
 ${previousError ? `<PreviousError>${previousError}</PreviousError>` : ""}
-${
-  Object.keys(metadata).length
-    ? `<Metadata>\n${JSON.stringify(metadata)}\n</Metadata>`
-    : ""
-}
 SQL:
 `.trim();
 
@@ -138,6 +143,8 @@ export const generalQuestionPrompt = (messages: string[]) =>
   `
 Act as Calendar‑GPT. If the latest user message is about calendar tasks, help them; otherwise, politely say you only handle calendar matters.
 
+Do not hallucinate or make up information. If you don’t know the answer, say so.
+
 <ChatHistory>
 ${JSON.stringify(messages, null, 2)}
 </ChatHistory>
@@ -153,16 +160,48 @@ export const routerPrompt = (
   chatHistory: string[] = []
 ) =>
   `
-Select **exactly** one node name (no punctuation, no markdown).
+You are the **router** for a multi‑skill assistant.  
+Return **one** node name (verbatim) that should answer the next user turn.
+
+─────────────────────────
+NODE DESCRIPTIONS
+${nodes
+  .map((n) => {
+    if (n === "GATHER_REQUIREMENTS") {
+      return `• ${n}: Handles calendar‑style tasks—creating, reading (listing / showing), updating, or deleting events or schedules.
+
+  ▸ Positive examples →  
+    "Add lunch with Sam at noon"  
+    "Move my 2 pm meeting to tomorrow"  
+    "Show me what's on my schedule today"  
+    "Delete the dentist appointment"
+
+  ▸ Negative examples (should go to GENERAL) →  
+    "What's the weather?"  
+    "Summarize this article"`;
+    }
+    if (n === "GENERAL") {
+      return `• ${n}: Any request that does not match another node’s domain.`;
+    }
+    return `• ${n}: <add description here>`;
+  })
+  .join("\n\n")}
+─────────────────────────
+ROUTING RULES
+1. Compare <UserRequest> (and <ChatHistory>) against the node descriptions and examples.  
+2. If the request clearly matches a node’s *positive* examples, choose that node.  
+3. If it matches a *negative* example or no description, choose **GENERAL**.  
+4. Output **only** the node name—with identical casing and no extra text.
+
+(Remember: think silently; never reveal your reasoning.)
 
 <Nodes>
 ${nodes.map((n) => `- ${n}`).join("\n")}
 </Nodes>
 
-• Use "gather requirements" only for create/list/update/delete requests.  
-• If ambiguous, choose "general".
-
-<UserRequest>${userRequest}</UserRequest>
+<UserRequest>
+${userRequest}
+</UserRequest>
 
 <ChatHistory>
 ${JSON.stringify(chatHistory, null, 2)}

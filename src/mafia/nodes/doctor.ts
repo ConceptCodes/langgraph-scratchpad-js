@@ -17,7 +17,13 @@ export const doctorNode = async (
   const doctor = players.find((player) => player.role === "doctor");
   const playerNames = players
     .filter((player) => !eliminatedPlayers.includes(player.name))
+    .filter((player) => player.name !== doctor?.name)
     .map((player) => player.name);
+
+  console.log(
+    "Public chat:",
+    publicChat.map((message) => message?.text)
+  );
 
   const prompt = choosePlayerToProtectPrompt(
     doctor?.name!,

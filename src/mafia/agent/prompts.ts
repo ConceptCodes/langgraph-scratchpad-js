@@ -239,8 +239,6 @@ export const respondToDiscussionPrompt = (
   bio: string,
   role: string,
   chatHistory: string[],
-  argumentBank: string[],
-  turnCounter: number
 ) =>
   `
   <Self name="${name}" role="${role}">
@@ -251,12 +249,6 @@ export const respondToDiscussionPrompt = (
 ${chatHistory.map((m) => `    <Msg>${m}</Msg>`).join("\n")}
   </ChatHistory>
 
-  <PhaseInfo>
-    <TurnsRemaining>${turnCounter}</TurnsRemaining>
-    <ArgumentsSoFar>
-      ${argumentBank.map((a) => `    <Argument>${a}</Argument>`).join("\n")}
-    </ArgumentsSoFar>
-  </PhaseInfo>
 
   <DecisionRules>
     - When TurnsRemaining = 0 → proposal cannot be "undecided".

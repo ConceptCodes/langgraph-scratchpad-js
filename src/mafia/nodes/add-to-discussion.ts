@@ -34,6 +34,7 @@ export const addToDiscussionNode = async (
     eliminatedPlayers,
     protectedPlayers,
     investigatedPlayers,
+    phase,
   } = state;
 
   if (!members || members.length === 0) {
@@ -44,7 +45,6 @@ export const addToDiscussionNode = async (
   }
 
   const speakingMember = members[Math.floor(Math.random() * members.length)];
-
   if (!speakingMember || !speakingMember.role) {
     console.error(
       "Selected speaking member or their role is invalid:",
@@ -68,7 +68,10 @@ export const addToDiscussionNode = async (
     });
   }
 
-  const chatLog = speakingMember?.role === "mafia" ? privateChat : publicChat;
+  const chatLog =
+    speakingMember?.role === "mafia" && phase == "night"
+      ? privateChat
+      : publicChat;
 
   const formattedChatLog = (chatLog || []).map(
     (message) => (message?.content as string) ?? ""
@@ -121,25 +124,28 @@ export const addToDiscussionNode = async (
     new HumanMessage(prompt),
   ]);
 
-  const isValidTarget = targets.some((p) => p.name === target);
-  if (!isValidTarget) {
-    console.warn(`LLM suggested an invalid target: ${target}. Ignoring vote.`);
-    return {
-      chatLog: [
-        new AIMessage(
-          `${speakingMember?.name}: I suggest ${target} for elimination. ${reason}`
-        ),
-      ],
-    };
-  }
-
   const currentTally = votes[target] ?? 0;
-  return {
-    chatLog: [
-      new AIMessage(
-        `${speakingMember?.name}: I suggest ${target} for elimination. ${reason}`
-      ),
-    ],
-    votes: { [target]: currentTally + 1 },
-  };
+  const isValidTarget = targets.some((p) => p.name === target);
+
+  if (isValidTarget) {
+    if (speakingMember.role === "mafia" && phase == "night") {
+      return {
+        privateChat: [
+          new AIMessage(
+            `${speakingMember?.name}: I suggest ${target} for elimination. ${reason}`
+          ),
+        ],
+        votes: { [target]: currentTally + 1 },
+      };
+    } else {
+      return {
+        publicChat: [
+          new AIMessage(
+            `${speakingMember?.name}: I suggest ${target} for elimination. ${reason}`
+          ),
+        ],
+        votes: { [target]: currentTally + 1 },
+      };
+    }
+  }
 };

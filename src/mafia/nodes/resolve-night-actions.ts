@@ -6,9 +6,12 @@ export const resolveNightActionsNode = (
   const { target, protectedPlayers } = state;
   const doctorProtected = protectedPlayers.pop();
 
+  console.log("Doctor protected:", doctorProtected);
+
   if (target != doctorProtected) {
     return {
       eliminatedPlayers: [target!],
+      target: null,
     };
   }
 

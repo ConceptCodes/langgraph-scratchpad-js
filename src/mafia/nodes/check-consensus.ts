@@ -26,6 +26,7 @@ export const checkConsensusNode = async (
       goto: Nodes.RESOLVE_VOTE,
       update: {
         consensusReached: true,
+        target: Object.keys(votes).find((player) => votes[player] === maxVotes),
       },
     });
   }

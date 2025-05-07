@@ -84,15 +84,14 @@ export const DiscussionStateAnnotation = Annotation.Root({
       }
     >
   >,
-});
-
-export const NightStateAnnotation = Annotation.Root({
-  ...DiscussionStateAnnotation.spec,
-
   target: Annotation<string | null>({
     reducer: (a, b) => b ?? a,
     default: () => null,
   }),
+});
+
+export const NightStateAnnotation = Annotation.Root({
+  ...DiscussionStateAnnotation.spec,
 });
 
 export const DayStateAnnotation = Annotation.Root({
