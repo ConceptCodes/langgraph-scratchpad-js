@@ -65,8 +65,6 @@ Moreover, the economic consequences of these tariffs extend beyond immediate pro
 [7] US tariffs impact economy | Deloitte Insights: https://www2.deloitte.com/us/en/insights/economy/spotlight/united-states-tariffs-impact-economy.html  
 [8] Fact Sheet: President Donald J. Trump Declares National Emergency to ...: https://www.whitehouse.gov/fact-sheets/2025/04/fact-sheet-president-donald-j-trump-declares-national-emergency-to-increase-our-competitive-edge-protect-our-sovereignty-and-strengthen-our-national-and-economic-security/  
 
-# trump tarrifs
-
 ## Conclusion
 
 In conclusion, the tariffs enacted by the Trump administration have significant economic implications. While they are projected to generate over $5.2 trillion in revenue over a decade, this potential gain is offset by declines in GDP, wages, and overall economic demand, leading to a net revenue increase of approximately $3.2 trillion after accounting for these losses. 
